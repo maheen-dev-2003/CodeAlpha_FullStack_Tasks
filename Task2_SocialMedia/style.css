@@ -1,1 +1,47 @@
+CSS
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+    margin: 0;
+    padding: 15px;
+}
 
+.app-container {
+    max-width: 500px;
+    margin: auto;
+}
+
+.create-post-card, .post-card {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+textarea {
+    width: 95%;
+    height: 60px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 8px;
+    resize: none;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.actions {
+    margin-top: 10px;
+}
+
+.like-btn {
+    background-color: #e74c3c;
+  }
