@@ -1,1 +1,41 @@
+JavaScript
+let posts = [];
 
+function addPost() {
+    const postText = document.getElementById('postInput').value;
+    if (postText.trim() === "") return;
+
+    const newPost = {
+        id: Date.now(),
+        text: postText,
+        likes: 0
+    };
+
+    posts.unshift(newPost);
+    document.getElementById('postInput').value = "";
+    renderPosts();
+}
+
+function likePost(id) {
+    const post = posts.find(p => p.id === id);
+    if (post) {
+        post.likes++;
+        renderPosts();
+    }
+}
+
+function renderPosts() {
+    const feed = document.getElementById('feedContainer');
+    feed.innerHTML = "";
+
+    posts.forEach(post => {
+        feed.innerHTML += `
+            <div class="post-card">
+                <p>${post.text}</p>
+                <div class="actions">
+                    <button class="like-btn" onclick="likePost(${post.id})">❤️ Like (${post.likes})</button>
+                </div>
+            </div>
+        `;
+    });
+}
