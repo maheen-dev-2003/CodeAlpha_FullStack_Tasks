@@ -1,27 +1,62 @@
-HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Commerce Store - CodeAlpha Task 1</title>
+    <title>CodeAlpha Shop - E-Commerce</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <header>
-        <h1>CodeAlpha Shop</h1>
-        <div class="cart-icon">
-            🛒 Cart (<span id="cart-count">0</span>)
-        </div>
-    </header>
 
-    <main class="container">
+<header>
+    <h1>🛍️ CodeAlpha Shopping Store</h1>
+
+    <div class="cart-icon">
+        🛒 Cart (<span id="cart-count">0</span>)
+    </div>
+</header>
+
+<main class="container">
+
+    <!-- Products -->
+    <section class="products-section">
         <h2>Our Products</h2>
-        <div class="product-grid" id="product-list">
-            <!-- Products will be dynamically loaded from script.js -->
-        </div>
-    </main>
 
-    <script src="script.js"></script>
+        <div class="products-grid" id="product-list">
+            <!-- Products will load from JavaScript -->
+        </div>
+    </section>
+
+    <!-- Shopping Cart -->
+    <section class="cart-section">
+
+        <h2>Your Shopping Cart</h2>
+
+        <div id="cart-items">
+            <p class="empty-msg">Your cart is empty.</p>
+        </div>
+
+        <div class="cart-total">
+
+            <h3>
+                Total Amount: $
+                <span id="total-price">0</span>
+            </h3>
+
+            <button
+                class="checkout-btn"
+                onclick="processOrder()">
+                Place Order
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+<script src="script.js"></script>
+
 </body>
 </html>
