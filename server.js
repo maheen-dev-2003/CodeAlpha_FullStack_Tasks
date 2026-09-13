@@ -1,64 +1,90 @@
+require('dotenv').config();
+const express = require('express');
+const http = require('http');
+const cors = require('cors');
+const { Server } = require('socket.io');
+const jwt = require('jsonwebtoken');
 
-const express = require("express");
-const cors = require("cors");
+const connectDB = require('./config/db');
+const authRoutes = require('./routes/authRoutes');
+const projectRoutes = require('./routes/projectRoutes');
+const taskRoutes = require('./routes/taskRoutes');
 
 const app = express();
-const PORT = 3000;
+const server = http.createServer(app);
 
-app.use(cors());
+// --- Middleware ---
+app.use(cors({ origin: process.env.CLIENT_URL || '*' }));
 app.use(express.json());
-app.use(express.static(__dirname));
 
-const products = [
-    {
-        id: 1,
-        name: "Wireless Headphones",
-        price: 49,
-        image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300"
-    },
-    {
-        id: 2,
-        name: "Smart Watch",
-        price: 89,
-        image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300"
-    },
-    {
-        id: 3,
-        name: "Gaming Mouse",
-        price: 29,
-        image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=300"
-    },
-    {
-        id: 4,
-        name: "Mechanical Keyboard",
-        price: 79,
-        image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=300"
-    }
-];
+// --- Database ---
+connectDB();
 
-app.get("/api/products", (req, res) => {
-    res.json(products);
+// --- Socket.io setup ---
+const io = new Server(server, {
+  cors: { origin: process.env.CLIENT_URL || '*' },
 });
 
-app.post("/api/orders", (req, res) => {
-    const { items } = req.body;
+// Authenticate socket connections using the same JWT as the REST API
+io.use((socket, next) => {
+  const token = socket.handshake.auth?.token;
+  if (!token) return next(new Error('Authentication error: no token provided'));
 
-    if (!items || items.length === 0) {
-        return res.status(400).json({
-            message: "Cart is empty"
-        });
-    }
-
-    const total = items.reduce((sum, item) => sum + item.price, 0);
-    const orderId = Math.floor(100000 + Math.random() * 900000);
-
-    res.status(201).json({
-        message: "Order placed successfully",
-        orderId,
-        total
-    });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    socket.userId = decoded.id;
+    next();
+  } catch (err) {
+    next(new Error('Authentication error: invalid token'));
+  }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+io.on('connection', (socket) => {
+  console.log(`Socket connected: ${socket.id} (user ${socket.userId})`);
+
+  // Personal room for direct notifications (e.g. project invites)
+  socket.join(`user:${socket.userId}`);
+
+  // Client asks to join a specific project's room to receive live board updates
+  socket.on('project:join', (projectId) => {
+    socket.join(`project:${projectId}`);
+  });
+
+  socket.on('project:leave', (projectId) => {
+    socket.leave(`project:${projectId}`);
+  });
+
+  // Lightweight "user is typing a comment" indicator
+  socket.on('task:typing', ({ taskId, userName }) => {
+    socket.to(`project:${socket.projectId}`).emit('task:typing', { taskId, userName });
+  });
+
+  socket.on('disconnect', () => {
+    console.log(`Socket disconnected: ${socket.id}`);
+  });
+});
+
+// Make io accessible in route handlers via req.app.get('io')
+app.set('io', io);
+
+// --- Routes ---
+app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+app.use('/api/auth', authRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/tasks', taskRoutes);
+
+// --- 404 handler ---
+app.use((req, res) => {
+  res.status(404).json({ message: 'Route not found' });
+});
+
+// --- Global error handler ---
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something went wrong on the server' });
+});
+
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
