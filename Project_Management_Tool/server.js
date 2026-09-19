@@ -29,7 +29,7 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Create Task// Create Project
+// Create Project
 app.post("/api/projects", async (req, res) => {
   try {
     const Project = require("./Project");
