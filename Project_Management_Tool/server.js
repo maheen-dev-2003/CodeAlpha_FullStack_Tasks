@@ -5,21 +5,33 @@ const cors = require("cors");
 
 const app = express();
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
+// Home route
 app.get("/", (req, res) => {
   res.json({
     message: "Project Management Tool API is running!"
   });
 });
 
+// Health check
 app.get("/api/health", (req, res) => {
   res.json({
-    status: "ok"
+    status: "ok",
+    message: "Server is healthy"
   });
 });
 
+// 404 route
+app.use((req, res) => {
+  res.status(404).json({
+    message: "Route not found"
+  });
+});
+
+// Server port
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
