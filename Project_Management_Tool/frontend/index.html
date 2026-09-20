@@ -1,0 +1,92 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Project Management Tool</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <header>
+    <h1>Project Management Tool</h1>
+    <p>Manage your projects and tasks</p>
+  </header>
+
+  <main class="container">
+
+    <!-- Dashboard -->
+    <section class="dashboard">
+
+      <div class="card">
+        <h2>Projects</h2>
+        <p id="projectCount">0</p>
+      </div>
+
+      <div class="card">
+        <h2>Tasks</h2>
+        <p id="taskCount">0</p>
+      </div>
+
+      <div class="card">
+        <h2>Server Status</h2>
+        <p id="serverStatus">Checking...</p>
+      </div>
+
+    </section>
+
+    <!-- Add Project -->
+    <section class="form-section">
+
+      <h2>Add Project</h2>
+
+      <form id="projectForm">
+
+        <input
+          type="text"
+          id="projectName"
+          placeholder="Project name"
+          required
+        >
+
+        <textarea
+          id="projectDescription"
+          placeholder="Project description"
+        ></textarea>
+
+        <select id="projectStatus">
+
+          <option value="Planning">Planning</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Completed">Completed</option>
+
+        </select>
+
+        <button type="submit">Add Project</button>
+
+      </form>
+
+    </section>
+
+    <!-- Projects List -->
+    <section class="projects-section">
+
+      <h2>Projects List</h2>
+
+      <div id="projectsList">
+        <p>Loading projects...</p>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
+```
