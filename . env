@@ -1,0 +1,2 @@
+MONGO_URI=mongodb+srv//maheensaeed2003_db_user:mongo456@cluster.067yohc.mongo.net/?appName=cluster0
+PORT=5000
