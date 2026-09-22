@@ -1,92 +1,383 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Project Management Tool</title>
 
-  <link rel="stylesheet" href="style.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f6f8;
+      color: #222;
+    }
+
+    header {
+      background: #1f2937;
+      color: white;
+      padding: 25px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin-bottom: 8px;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1100px;
+      margin: 30px auto;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .card h2 {
+      font-size: 30px;
+      margin-top: 10px;
+    }
+
+    .form-box,
+    .projects-box {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .project {
+      border: 1px solid #ddd;
+      padding: 18px;
+      margin-top: 15px;
+      border-radius: 8px;
+    }
+
+    .project h3 {
+      margin-bottom: 8px;
+    }
+
+    .status {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 5px 10px;
+      background: #e5e7eb;
+      border-radius: 15px;
+      font-size: 13px;
+    }
+
+    #message {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 700px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-  <header>
-    <h1>Project Management Tool</h1>
-    <p>Manage your projects and tasks</p>
-  </header>
+<header>
+  <h1>Project Management Tool</h1>
+  <p>Manage your projects and tasks</p>
+</header>
 
-  <main class="container">
+<div class="container">
 
-    <!-- Dashboard -->
-    <section class="dashboard">
+  <div class="dashboard">
+    <div class="card">
+      <p>Projects</p>
+      <h2 id="projectCount">0</h2>
+    </div>
 
-      <div class="card">
-        <h2>Projects</h2>
-        <p id="projectCount">0</p>
-      </div>
+    <div class="card">
+      <p>Tasks</p>
+      <h2 id="taskCount">0</h2>
+    </div>
 
-      <div class="card">
-        <h2>Tasks</h2>
-        <p id="taskCount">0</p>
-      </div>
+    <div class="card">
+      <p>Backend Status</p>
+      <h2 id="serverStatus">Checking...</h2>
+    </div>
+  </div>
 
-      <div class="card">
-        <h2>Server Status</h2>
-        <p id="serverStatus">Checking...</p>
-      </div>
+  <div class="form-box">
+    <h2>Add New Project</h2>
 
-    </section>
+    <form id="projectForm">
 
-    <!-- Add Project -->
-    <section class="form-section">
+      <label>Project Name</label>
+      <input
+        type="text"
+        id="projectName"
+        placeholder="Enter project name"
+        required
+      >
 
-      <h2>Add Project</h2>
+      <label>Description</label>
+      <textarea
+        id="projectDescription"
+        placeholder="Enter project description"
+      ></textarea>
 
-      <form id="projectForm">
+      <label>Status</label>
+      <select id="projectStatus">
+        <option value="Not Started">Not Started</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Completed">Completed</option>
+      </select>
 
-        <input
-          type="text"
-          id="projectName"
-          placeholder="Project name"
-          required
-        >
+      <button type="submit">Add Project</button>
 
-        <textarea
-          id="projectDescription"
-          placeholder="Project description"
-        ></textarea>
+    </form>
 
-        <select id="projectStatus">
+    <p id="message"></p>
+  </div>
 
-          <option value="Planning">Planning</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Completed">Completed</option>
+  <div class="projects-box">
+    <h2>Projects List</h2>
 
-        </select>
+    <div id="projectsList">
+      Loading projects...
+    </div>
+  </div>
 
-        <button type="submit">Add Project</button>
+</div>
 
-      </form>
+<script>
 
-    </section>
+  const API_URL = "http://localhost:5000/api";
 
-    <!-- Projects List -->
-    <section class="projects-section">
+  // Check backend
+  async function checkServer() {
+    try {
+      const response = await fetch(`${API_URL}/health`);
 
-      <h2>Projects List</h2>
+      if (!response.ok) {
+        throw new Error("Server error");
+      }
 
-      <div id="projectsList">
-        <p>Loading projects...</p>
-      </div>
+      const data = await response.json();
 
-    </section>
+      document.getElementById("serverStatus").textContent = "Online";
 
-  </main>
+      console.log("Backend:", data);
 
-  <script src="script.js"></script>
+    } catch (error) {
+
+      document.getElementById("serverStatus").textContent = "Offline";
+
+      console.error("Backend connection error:", error);
+    }
+  }
+
+
+  // Load projects
+  async function loadProjects() {
+
+    try {
+
+      const response = await fetch(`${API_URL}/projects`);
+
+      if (!response.ok) {
+        throw new Error("Failed to load projects");
+      }
+
+      const projects = await response.json();
+
+      document.getElementById("projectCount").textContent =
+        projects.length;
+
+      const projectsList =
+        document.getElementById("projectsList");
+
+      if (projects.length === 0) {
+
+        projectsList.innerHTML =
+          "<p>No projects found.</p>";
+
+        return;
+      }
+
+      projectsList.innerHTML = "";
+
+      projects.forEach(project => {
+
+        const div = document.createElement("div");
+
+        div.className = "project";
+
+        div.innerHTML = `
+          <h3>${project.name}</h3>
+
+          <p>${project.description || "No description"}</p>
+
+          <span class="status">
+            ${project.status || "Not Started"}
+          </span>
+        `;
+
+        projectsList.appendChild(div);
+
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+      document.getElementById("projectsList").innerHTML =
+        "<p>Unable to load projects.</p>";
+    }
+  }
+
+
+  // Load tasks count
+  async function loadTasks() {
+
+    try {
+
+      const response = await fetch(`${API_URL}/tasks`);
+
+      if (!response.ok) {
+        throw new Error("Failed to load tasks");
+      }
+
+      const tasks = await response.json();
+
+      document.getElementById("taskCount").textContent =
+        tasks.length;
+
+    } catch (error) {
+
+      console.error("Task error:", error);
+
+      document.getElementById("taskCount").textContent = "0";
+    }
+  }
+
+
+  // Add project
+  document
+    .getElementById("projectForm")
+    .addEventListener("submit", async function(event) {
+
+      event.preventDefault();
+
+      const name =
+        document.getElementById("projectName").value;
+
+      const description =
+        document.getElementById("projectDescription").value;
+
+      const status =
+        document.getElementById("projectStatus").value;
+
+      const message =
+        document.getElementById("message");
+
+      try {
+
+        const response = await fetch(
+          `${API_URL}/projects`,
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+              name,
+              description,
+              status
+            })
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Project creation failed");
+        }
+
+        message.textContent =
+          "Project added successfully!";
+
+        message.style.color = "green";
+
+        document.getElementById("projectForm").reset();
+
+        loadProjects();
+
+      } catch (error) {
+
+        message.textContent =
+          "Error: " + error.message;
+
+        message.style.color = "red";
+
+        console.error(error);
+      }
+
+    });
+
+
+  // Start application
+  checkServer();
+  loadProjects();
+  loadTasks();
+
+</script>
 
 </body>
 </html>
-```
