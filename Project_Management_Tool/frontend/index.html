@@ -193,6 +193,11 @@
   </div>
 
 </div>
+<h2>Projects List</h2>
+
+<div id="projectsList">
+  Loading projects...
+</div>
 
 <script>
 
@@ -279,8 +284,6 @@
         "<p>Unable to load projects.</p>";
     }
   }
-
-
   // Load tasks count
   async function loadTasks() {
 
@@ -371,7 +374,172 @@
 
     });
 
+  // Load projects into task dropdown
+  async function loadProjectOptions() {
+    try {
+      const response = await fetch(`${API_URL}/projects`);
 
+      if (!response.ok) {
+        throw new Error("Failed to load projects");
+      }
+
+      const projects = await response.json();
+
+      const projectSelect = document.getElementById("taskProject");
+
+      projectSelect.innerHTML = '<option value="">Select Project</option>';
+
+      projects.forEach(project => {
+        const option = document.createElement("option");
+
+        option.value = project._id;
+        option.textContent = project.name;
+
+        projectSelect.appendChild(option);
+      });
+
+    } catch (error) {
+      console.error("Project dropdown error:", error);
+    }
+  }
+
+
+  // Load all tasks
+  async function loadTaskList() {
+    try {
+      const response = await fetch(`${API_URL}/tasks`);
+
+      if (!response.ok) {
+        throw new Error("Failed to load tasks");
+      }
+
+      const tasks = await response.json();
+
+      const tasksList = document.getElementById("tasksList");
+
+      if (tasks.length === 0) {
+        tasksList.innerHTML = "<p>No tasks found.</p>";
+        return;
+      }
+
+      tasksList.innerHTML = "";
+
+      tasks.forEach(task => {
+        const div = document.createElement("div");
+
+        div.className = "task";
+
+        div.innerHTML = `
+          <h3>${task.title}</h3>
+          <p>${task.description || "No description"}</p>
+          <p><strong>Status:</strong> ${task.status}</p>
+          <p><strong>Priority:</strong> ${task.priority}</p>
+          <p><strong>Due Date:</strong> ${
+            task.dueDate
+              ? new Date(task.dueDate).toLocaleDateString()
+              : "No due date"
+          }</p>
+        `;
+
+        tasksList.appendChild(div);
+      });
+
+    } catch (error) {
+      console.error("Task list error:", error);
+
+      document.getElementById("tasksList").innerHTML =
+        "<p>Unable to load tasks.</p>";
+    }
+  }
+
+
+  // Add task
+  document
+    .getElementById("taskForm")
+    .addEventListener("submit", async function(event) {
+
+      event.preventDefault();
+
+      const title =
+        document.getElementById("taskTitle").value;
+
+      const description =
+        document.getElementById("taskDescription").value;
+
+      const status =
+        document.getElementById("taskStatus").value;
+
+      const priority =
+        document.getElementById("taskPriority").value;
+
+      const dueDate =
+        document.getElementById("taskDueDate").value;
+
+      const project =
+        document.getElementById("taskProject").value;
+
+      const message =
+        document.getElementById("taskMessage");
+
+      if (!project) {
+        message.textContent = "Please select a project.";
+        message.style.color = "red";
+        return;
+      }
+
+      try {
+
+        const response = await fetch(
+          `${API_URL}/tasks`,
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+              title,
+              description,
+              status,
+              priority,
+              dueDate: dueDate || null,
+              project
+            })
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Task creation failed");
+        }
+
+        message.textContent =
+          "Task added successfully!";
+
+        message.style.color = "green";
+
+        document.getElementById("taskForm").reset();
+
+        loadTaskList();
+        loadTasks();
+
+      } catch (error) {
+
+        message.textContent =
+          "Error: " + error.message;
+
+        message.style.color = "red";
+
+        console.error(error);
+      }
+
+    });
+
+
+  loadProjectOptions();
+  loadTaskList();
   // Start application
   checkServer();
   loadProjects();
