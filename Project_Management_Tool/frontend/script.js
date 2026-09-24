@@ -48,82 +48,64 @@ async function checkServer() {
 ========================= */
 
 async function loadProjects() {
-  const projectsList =
-    document.getElementById("projectsList");
-
-  const projectCount =
-    document.getElementById("projectCount");
+  const projectsList = document.getElementById("projectsList");
+  const projectCount = document.getElementById("projectCount");
 
   if (!projectsList) return;
 
   try {
-    projectsList.innerHTML =
-      "<p>Loading projects...</p>";
+    projectsList.innerHTML = "<p>Loading projects...</p>";
 
-    const response =
-      await fetch(`${API_URL}/projects`);
+    const response = await fetch(`${API_URL}/projects`);
 
     if (!response.ok) {
-      throw new Error(
-        `Projects API error: ${response.status}`
-      );
+      throw new Error(`Projects API error: ${response.status}`);
     }
 
-    const projects =
-      await response.json();
+    const projects = await response.json();
 
     console.log("Projects:", projects);
 
     if (projectCount) {
-      projectCount.textContent =
-        projects.length;
+      projectCount.textContent = projects.length;
     }
 
     if (!projects.length) {
-
       projectsList.innerHTML = `
         <div class="empty-tasks">
           <h3>📂 No Projects Yet</h3>
           <p>Create your first project above.</p>
         </div>
       `;
-
+      updateLiveGraph();
       return;
     }
 
     projectsList.innerHTML = "";
 
     projects.forEach((project) => {
-
-      const card =
-        document.createElement("div");
+      const card = document.createElement("div");
 
       card.className = "project-card";
 
       card.innerHTML = `
         <div class="project-header">
-
           <h3>
-            📂 ${escapeHTML(
-              project.name || "Untitled Project"
-            )}
+            📂 ${escapeHTML(project.name || "Untitled Project")}
           </h3>
-
         </div>
 
         <p>
           ${escapeHTML(
-            project.description ||
-            "No description available"
+            project.description || "No description available"
           )}
         </p>
 
         <div class="project-status">
           <strong>Status:</strong>
+
           <span>
-            ${escapeHTML(
-              project.status || "Planning"
-            )}
+            ${escapeHTML(project.status || "Planning")}
           </span>
         </div>
       `;
@@ -131,12 +113,14 @@ async function loadProjects() {
       projectsList.appendChild(card);
     });
 
-  } catch (error) {
+    updateLiveGraph();
 
-    console.error(
-      "Projects loading error:",
-      error
-    );
+  } catch (error) {
+    console.error("Projects loading error:", error);
+
+    if (projectCount) {
+      projectCount.textContent = "0";
+    }
 
     projectsList.innerHTML = `
       <div class="empty-tasks">
@@ -155,39 +139,29 @@ async function loadProjects() {
 ========================= */
 
 async function loadTasks() {
-
-  const tasksList =
-    document.getElementById("tasksList");
-
-  const taskCount =
-    document.getElementById("taskCount");
+  const tasksList = document.getElementById("tasksList");
+  const taskCount = document.getElementById("taskCount");
 
   if (!tasksList) return;
 
   try {
+    tasksList.innerHTML = "<p>Loading tasks...</p>";
 
-    tasksList.innerHTML =
-      "<p>Loading tasks...</p>";
-
-    const response =
-      await fetch(`${API_URL}/tasks`);
+    const response = await fetch(`${API_URL}/tasks`);
 
     if (!response.ok) {
-      throw new Error(
-        `Tasks API error: ${response.status}`
-      );
+      throw new Error(`Tasks API error: ${response.status}`);
     }
 
-    const tasks =
-      await response.json();
+    const tasks = await response.json();
+
+    console.log("Tasks:", tasks);
 
     if (taskCount) {
-      taskCount.textContent =
-        tasks.length;
+      taskCount.textContent = tasks.length;
     }
 
     if (!tasks.length) {
-
       tasksList.innerHTML = `
         <div class="empty-tasks">
           <h3>✓ No Tasks Yet</h3>
@@ -195,42 +169,31 @@ async function loadTasks() {
         </div>
       `;
 
+      updateLiveGraph();
       return;
     }
 
     tasksList.innerHTML = "";
 
     tasks.forEach((task) => {
-
-      const card =
-        document.createElement("div");
+      const card = document.createElement("div");
 
       card.className = "task-card";
 
-      const status =
-        task.status || "Pending";
+      const status = task.status || "Pending";
+      const priority = task.priority || "Medium";
 
-      const priority =
-        task.priority || "Medium";
-
-      let dueDate =
-        "No due date";
+      let dueDate = "No due date";
 
       if (task.dueDate) {
-
-        dueDate =
-          new Date(
-            task.dueDate
-          ).toLocaleDateString();
+        dueDate = new Date(task.dueDate).toLocaleDateString();
       }
 
       card.innerHTML = `
         <div class="task-header">
 
           <h3>
-            ${escapeHTML(
-              task.title || "Untitled Task"
-            )}
+            ${escapeHTML(task.title || "Untitled Task")}
           </h3>
 
           <div class="task-actions">
@@ -238,14 +201,16 @@ async function loadTasks() {
             <button
               class="edit-task"
               onclick="editTask('${task._id}')"
-              title="Edit Task">
+              title="Edit Task"
+            >
               ✏️
             </button>
 
             <button
               class="delete-task"
               onclick="deleteTask('${task._id}')"
-              title="Delete Task">
+              title="Delete Task"
+            >
               🗑️
             </button>
 
@@ -254,10 +219,7 @@ async function loadTasks() {
         </div>
 
         <p class="task-description">
-          ${escapeHTML(
-            task.description ||
-            "No description"
-          )}
+          ${escapeHTML(task.description || "No description")}
         </p>
 
         <div class="task-info">
@@ -273,19 +235,21 @@ async function loadTasks() {
         </div>
 
         <div class="task-date">
-          📅 ${dueDate}
+          📅 ${escapeHTML(dueDate)}
         </div>
       `;
 
       tasksList.appendChild(card);
     });
 
-  } catch (error) {
+    updateLiveGraph();
 
-    console.error(
-      "Tasks loading error:",
-      error
-    );
+  } catch (error) {
+    console.error("Tasks loading error:", error);
+
+    if (taskCount) {
+      taskCount.textContent = "0";
+    }
 
     tasksList.innerHTML = `
       <div class="empty-tasks">
@@ -305,27 +269,23 @@ async function loadTasks() {
 
 async function deleteTask(taskId) {
 
-  const confirmDelete =
-    confirm(
-      "Are you sure you want to delete this task?"
-    );
+  const confirmDelete = confirm(
+    "Are you sure you want to delete this task?"
+  );
 
   if (!confirmDelete) return;
 
   try {
 
-    const response =
-      await fetch(
-        `${API_URL}/tasks/${taskId}`,
-        {
-          method: "DELETE"
-        }
-      );
+    const response = await fetch(
+      `${API_URL}/tasks/${taskId}`,
+      {
+        method: "DELETE"
+      }
+    );
 
     if (!response.ok) {
-      throw new Error(
-        "Failed to delete task"
-      );
+      throw new Error("Failed to delete task");
     }
 
     await response.json();
@@ -334,14 +294,9 @@ async function deleteTask(taskId) {
 
   } catch (error) {
 
-    console.error(
-      "Delete task error:",
-      error
-    );
+    console.error("Delete task error:", error);
 
-    alert(
-      "Failed to delete task."
-    );
+    alert("Failed to delete task.");
   }
 }
 
@@ -354,123 +309,113 @@ async function editTask(taskId) {
 
   try {
 
-    const response =
-      await fetch(`${API_URL}/tasks`);
+    const response = await fetch(
+      `${API_URL}/tasks`
+    );
 
     if (!response.ok) {
-      throw new Error(
-        "Failed to load task"
-      );
+      throw new Error("Failed to load task");
     }
 
-    const tasks =
-      await response.json();
+    const tasks = await response.json();
 
-    const task =
-      tasks.find(
-        (item) => item._id === taskId
-      );
+    const task = tasks.find(
+      (item) => item._id === taskId
+    );
 
     if (!task) {
       alert("Task not found.");
       return;
     }
 
-    const title =
-      prompt(
-        "Task Title:",
-        task.title || ""
-      );
+
+    const title = prompt(
+      "Task Title:",
+      task.title || ""
+    );
 
     if (title === null) return;
 
-    const description =
-      prompt(
-        "Task Description:",
-        task.description || ""
-      );
+
+    const description = prompt(
+      "Task Description:",
+      task.description || ""
+    );
 
     if (description === null) return;
 
-    const status =
-      prompt(
-        "Status: Pending / In Progress / Completed",
-        task.status || "Pending"
-      );
+
+    const status = prompt(
+      "Status: Pending / In Progress / Completed",
+      task.status || "Pending"
+    );
 
     if (status === null) return;
 
-    const priority =
-      prompt(
-        "Priority: Low / Medium / High",
-        task.priority || "Medium"
-      );
+
+    const priority = prompt(
+      "Priority: Low / Medium / High",
+      task.priority || "Medium"
+    );
 
     if (priority === null) return;
+
 
     let oldDate = "";
 
     if (task.dueDate) {
 
-      oldDate =
-        new Date(task.dueDate)
-          .toISOString()
-          .split("T")[0];
+      oldDate = new Date(task.dueDate)
+        .toISOString()
+        .split("T")[0];
+
     }
 
-    const dueDate =
-      prompt(
-        "Due Date (YYYY-MM-DD):",
-        oldDate
-      );
+
+    const dueDate = prompt(
+      "Due Date (YYYY-MM-DD):",
+      oldDate
+    );
 
     if (dueDate === null) return;
 
-    const updateResponse =
-      await fetch(
-        `${API_URL}/tasks/${taskId}`,
-        {
-          method: "PUT",
 
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
+    const updateResponse = await fetch(
+      `${API_URL}/tasks/${taskId}`,
+      {
+        method: "PUT",
 
-          body: JSON.stringify({
-            title,
-            description,
-            status,
-            priority,
-            dueDate
-          })
-        }
-      );
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          title,
+          description,
+          status,
+          priority,
+          dueDate
+        })
+      }
+    );
+
 
     if (!updateResponse.ok) {
-      throw new Error(
-        "Failed to update task"
-      );
+      throw new Error("Failed to update task");
     }
+
 
     await updateResponse.json();
 
     await loadTasks();
 
-    alert(
-      "Task updated successfully! ✅"
-    );
+    alert("Task updated successfully! ✅");
 
   } catch (error) {
 
-    console.error(
-      "Edit task error:",
-      error
-    );
+    console.error("Edit task error:", error);
 
-    alert(
-      "Failed to update task."
-    );
+    alert("Failed to update task.");
   }
 }
 
@@ -482,6 +427,7 @@ async function editTask(taskId) {
 const projectForm =
   document.getElementById("projectForm");
 
+
 if (projectForm) {
 
   projectForm.addEventListener(
@@ -490,25 +436,45 @@ if (projectForm) {
 
       event.preventDefault();
 
+
       const name =
-        document.getElementById(
-          "projectName"
-        ).value.trim();
+        document
+          .getElementById("projectName")
+          .value
+          .trim();
+
 
       const description =
-        document.getElementById(
-          "projectDescription"
-        ).value.trim();
+        document
+          .getElementById("projectDescription")
+          .value
+          .trim();
+
 
       const status =
-        document.getElementById(
-          "projectStatus"
-        ).value;
+        document
+          .getElementById("projectStatus")
+          .value;
+
 
       const message =
-        document.getElementById(
-          "projectMessage"
-        );
+        document.getElementById("projectMessage");
+
+
+      if (!name) {
+
+        if (message) {
+
+          message.textContent =
+            "Please enter a project name.";
+
+          message.style.color =
+            "#e63972";
+        }
+
+        return;
+      }
+
 
       try {
 
@@ -519,8 +485,7 @@ if (projectForm) {
               method: "POST",
 
               headers: {
-                "Content-Type":
-                  "application/json"
+                "Content-Type": "application/json"
               },
 
               body: JSON.stringify({
@@ -531,13 +496,16 @@ if (projectForm) {
             }
           );
 
+
         if (!response.ok) {
           throw new Error(
             "Failed to create project"
           );
         }
 
+
         await response.json();
+
 
         if (message) {
 
@@ -548,7 +516,9 @@ if (projectForm) {
             "#16a36a";
         }
 
+
         projectForm.reset();
+
 
         await loadProjects();
 
@@ -560,6 +530,7 @@ if (projectForm) {
           "Create project error:",
           error
         );
+
 
         if (message) {
 
@@ -582,11 +553,11 @@ if (projectForm) {
 async function loadProjectOptions() {
 
   const select =
-    document.getElementById(
-      "taskProject"
-    );
+    document.getElementById("taskProject");
+
 
   if (!select) return;
+
 
   try {
 
@@ -595,32 +566,38 @@ async function loadProjectOptions() {
         `${API_URL}/projects`
       );
 
+
     if (!response.ok) {
       throw new Error(
         "Failed to load projects"
       );
     }
 
+
     const projects =
       await response.json();
 
-    select.innerHTML =
-      `<option value="">
+
+    select.innerHTML = `
+      <option value="">
         Select Project
-      </option>`;
+      </option>
+    `;
+
 
     projects.forEach((project) => {
 
       const option =
-        document.createElement(
-          "option"
-        );
+        document.createElement("option");
+
 
       option.value =
         project._id;
 
+
       option.textContent =
         project.name;
+
 
       select.appendChild(option);
     });
@@ -640,9 +617,8 @@ async function loadProjectOptions() {
 ========================= */
 
 const taskForm =
-  document.getElementById(
-    "taskForm"
-  );
+  document.getElementById("taskForm");
+
 
 if (taskForm) {
 
@@ -652,40 +628,65 @@ if (taskForm) {
 
       event.preventDefault();
 
+
       const title =
-        document.getElementById(
-          "taskTitle"
-        ).value.trim();
+        document
+          .getElementById("taskTitle")
+          .value
+          .trim();
+
 
       const description =
-        document.getElementById(
-          "taskDescription"
-        ).value.trim();
+        document
+          .getElementById("taskDescription")
+          .value
+          .trim();
+
 
       const status =
-        document.getElementById(
-          "taskStatus"
-        ).value;
+        document
+          .getElementById("taskStatus")
+          .value;
+
 
       const priority =
-        document.getElementById(
-          "taskPriority"
-        ).value;
+        document
+          .getElementById("taskPriority")
+          .value;
+
 
       const dueDate =
-        document.getElementById(
-          "taskDueDate"
-        ).value;
+        document
+          .getElementById("taskDueDate")
+          .value;
+
 
       const project =
-        document.getElementById(
-          "taskProject"
-        ).value;
+        document
+          .getElementById("taskProject")
+          .value;
+
 
       const message =
         document.getElementById(
           "taskMessage"
         );
+
+
+      if (!title) {
+
+        if (message) {
+
+          message.textContent =
+            "Please enter a task title.";
+
+          message.style.color =
+            "#e63972";
+        }
+
+        return;
+      }
+
 
       try {
 
@@ -696,8 +697,7 @@ if (taskForm) {
               method: "POST",
 
               headers: {
-                "Content-Type":
-                  "application/json"
+                "Content-Type": "application/json"
               },
 
               body: JSON.stringify({
@@ -706,11 +706,11 @@ if (taskForm) {
                 status,
                 priority,
                 dueDate,
-                project:
-                  project || null
+                project: project || null
               })
             }
           );
+
 
         if (!response.ok) {
           throw new Error(
@@ -718,7 +718,9 @@ if (taskForm) {
           );
         }
 
+
         await response.json();
+
 
         if (message) {
 
@@ -729,7 +731,9 @@ if (taskForm) {
             "#16a36a";
         }
 
+
         taskForm.reset();
+
 
         await loadTasks();
 
@@ -739,6 +743,7 @@ if (taskForm) {
           "Create task error:",
           error
         );
+
 
         if (message) {
 
@@ -763,10 +768,126 @@ function escapeHTML(value) {
   const div =
     document.createElement("div");
 
+
   div.textContent =
-    value;
+    String(value);
+
 
   return div.innerHTML;
+}
+
+
+/* =========================
+   LIVE GRAPH
+========================= */
+
+function updateLiveGraph() {
+
+  const projectCountElement =
+    document.getElementById(
+      "projectCount"
+    );
+
+
+  const taskCountElement =
+    document.getElementById(
+      "taskCount"
+    );
+
+
+  const projectBar =
+    document.getElementById(
+      "projectsGraphBar"
+    );
+
+
+  const taskBar =
+    document.getElementById(
+      "tasksGraphBar"
+    );
+
+
+  const projectValue =
+    document.getElementById(
+      "projectsGraphValue"
+    );
+
+
+  const taskValue =
+    document.getElementById(
+      "tasksGraphValue"
+    );
+
+
+  if (
+    !projectCountElement ||
+    !taskCountElement ||
+    !projectBar ||
+    !taskBar
+  ) {
+    return;
+  }
+
+
+  const projects =
+    parseInt(
+      projectCountElement.textContent.trim()
+    ) || 0;
+
+
+  const tasks =
+    parseInt(
+      taskCountElement.textContent.trim()
+    ) || 0;
+
+
+  if (projectValue) {
+    projectValue.textContent =
+      projects;
+  }
+
+
+  if (taskValue) {
+    taskValue.textContent =
+      tasks;
+  }
+
+
+  const maximum =
+    Math.max(
+      projects,
+      tasks,
+      1
+    );
+
+
+  const projectHeight =
+    projects === 0
+      ? 0
+      : (projects / maximum) * 100;
+
+
+  const taskHeight =
+    tasks === 0
+      ? 0
+      : (tasks / maximum) * 100;
+
+
+  projectBar.style.height = "0%";
+
+  taskBar.style.height = "0%";
+
+
+  setTimeout(() => {
+
+    projectBar.style.height =
+      projectHeight + "%";
+
+
+    taskBar.style.height =
+      taskHeight + "%";
+
+  }, 100);
 }
 
 
@@ -775,6 +896,16 @@ function escapeHTML(value) {
 ========================= */
 
 checkServer();
+
 loadProjects();
+
 loadTasks();
+
 loadProjectOptions();
+
+updateLiveGraph();
+
+setInterval(
+  updateLiveGraph,
+  1000
+);

@@ -1,301 +1,908 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Project Management Tool</title>
+  <title>ProjectFlow // Command Center</title>
 
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <!-- Sidebar -->
+  <!-- Background -->
+  <div class="cyber-grid"></div>
+  <div class="scanlines"></div>
+
+
+  <!-- =========================
+       SIDEBAR
+  ========================== -->
+
   <aside class="sidebar">
 
     <div class="logo">
+
       <div class="logo-icon">P</div>
-      <span>ProjectFlow</span>
+
+      <div>
+        <span>PROJECTFLOW</span>
+        <small>// COMMAND CENTER</small>
+      </div>
+
     </div>
 
+
     <nav>
-      <a href="#dashboard" class="active">📊 Dashboard</a>
-      <a href="#projects">📁 Projects</a>
-      <a href="#tasks">✓ Tasks</a>
-      <a href="#add-project">＋ Add Project</a>
-      <a href="#add-task">＋ Add Task</a>
+
+      <a href="#dashboard" class="active">
+        <span class="nav-code">01</span>
+        <span>▣ DASHBOARD</span>
+      </a>
+
+      <a href="#projects">
+        <span class="nav-code">02</span>
+        <span>▤ PROJECTS</span>
+      </a>
+
+      <a href="#tasks">
+        <span class="nav-code">03</span>
+        <span>✓ TASKS</span>
+      </a>
+
+      <a href="#add-project">
+        <span class="nav-code">04</span>
+        <span>＋ NEW PROJECT</span>
+      </a>
+
+      <a href="#add-task">
+        <span class="nav-code">05</span>
+        <span>＋ NEW TASK</span>
+      </a>
+
     </nav>
 
+
+    <!-- System Status -->
+
+    <div class="system-box">
+
+      <div class="system-title">
+        SYSTEM STATUS
+      </div>
+
+      <div class="system-row">
+        <span>DATABASE</span>
+        <span class="online-text">
+          ● ONLINE
+        </span>
+      </div>
+
+      <div class="system-row">
+        <span>API</span>
+        <span class="online-text">
+          ● ACTIVE
+        </span>
+      </div>
+
+      <div class="system-row">
+        <span>MODE</span>
+        <span>
+          DEV
+        </span>
+      </div>
+
+    </div>
+
+
+    <!-- Sidebar Footer -->
+
     <div class="sidebar-bottom">
-      <p>Project Management</p>
-      <small>Full Stack Application</small>
+
+      <p>PROJECT MANAGEMENT</p>
+
+      <small>
+        FULL STACK APPLICATION
+      </small>
+
+      <small>
+        v1.0.0 // SECURE
+      </small>
+
     </div>
 
   </aside>
 
 
-  <!-- Main Content -->
+
+  <!-- =========================
+       MAIN CONTENT
+  ========================== -->
+
   <div class="main-content">
 
-    <!-- Top Header -->
+
+    <!-- TOP HEADER -->
+
     <header class="topbar">
 
-      <div>
-        <h1>Dashboard</h1>
-        <p>Manage your projects and tasks</p>
+      <div class="page-title">
+
+        <h1>
+          DASHBOARD<span class="blink">_</span>
+        </h1>
+
+        <p>
+          // PROJECT MANAGEMENT COMMAND CENTER
+        </p>
+
       </div>
 
+
       <div class="status-badge">
+
         <span class="status-dot"></span>
-        <span id="serverStatus">Checking...</span>
+
+        <span id="serverStatus">
+          CHECKING...
+        </span>
+
       </div>
 
     </header>
 
 
+
     <main id="dashboard">
 
-      <!-- Statistics -->
+
+      <!-- =========================
+           STATISTICS
+      ========================== -->
+
       <section class="stats">
 
-        <div class="stat-card projects-stat">
-          <div class="stat-icon">📁</div>
 
-          <div>
-            <p>Total Projects</p>
-            <h2 id="projectCount">0</h2>
+        <!-- PROJECTS -->
+
+        <div class="stat-card projects-stat">
+
+          <div class="card-glow"></div>
+
+          <div class="stat-top">
+
+            <span>
+              PROJECTS
+            </span>
+
+            <span class="stat-code">
+              [01]
+            </span>
+
           </div>
+
+
+          <div class="stat-icon">
+            ◈
+          </div>
+
+
+          <div class="stat-number">
+
+            <h2 id="projectCount">
+              0
+            </h2>
+
+          </div>
+
+
+          <div class="stat-label">
+            TOTAL PROJECTS
+          </div>
+
+
+          <div class="progress-line">
+            <span></span>
+          </div>
+
         </div>
 
+
+
+        <!-- TASKS -->
 
         <div class="stat-card tasks-stat">
-          <div class="stat-icon">✓</div>
 
-          <div>
-            <p>Total Tasks</p>
-            <h2 id="taskCount">0</h2>
+          <div class="card-glow"></div>
+
+          <div class="stat-top">
+
+            <span>
+              TASKS
+            </span>
+
+            <span class="stat-code">
+              [02]
+            </span>
+
           </div>
+
+
+          <div class="stat-icon">
+            ◆
+          </div>
+
+
+          <div class="stat-number">
+
+            <h2 id="taskCount">
+              0
+            </h2>
+
+          </div>
+
+
+          <div class="stat-label">
+            TOTAL TASKS
+          </div>
+
+
+          <div class="progress-line">
+            <span></span>
+          </div>
+
         </div>
 
 
-        <div class="stat-card server-stat">
-          <div class="stat-icon">⚡</div>
 
-          <div>
-            <p>Backend Status</p>
-            <h2 id="serverStatusCard">Checking...</h2>
+        <!-- SERVER -->
+
+        <div class="stat-card server-stat">
+
+          <div class="card-glow"></div>
+
+          <div class="stat-top">
+
+            <span>
+              SYSTEM
+            </span>
+
+            <span class="stat-code">
+              [03]
+            </span>
+
           </div>
+
+
+          <div class="stat-icon">
+            ⚡
+          </div>
+
+
+          <div class="stat-number status-number">
+
+            <h2 id="serverStatusCard">
+              CHECKING...
+            </h2>
+
+          </div>
+
+
+          <div class="stat-label">
+            BACKEND STATUS
+          </div>
+
+
+          <div class="progress-line">
+            <span></span>
+          </div>
+
         </div>
 
       </section>
 
 
-      <!-- Add Project -->
-      <section class="content-card" id="add-project">
 
-        <div class="section-heading">
+      <!-- =========================
+           LIVE GRAPH
+      ========================== -->
+
+      <section class="graph-card">
+
+
+        <div class="graph-header">
+
           <div>
-            <h2>Create New Project</h2>
-            <p>Add a new project to your workspace</p>
+
+            <div class="section-code">
+              // DATA_VISUALIZATION
+            </div>
+
+            <h2>
+              LIVE SYSTEM OVERVIEW
+            </h2>
+
+            <p>
+              Real-time Projects vs Tasks analysis
+            </p>
+
           </div>
 
-          <span class="heading-icon">📁</span>
+
+          <div class="live-indicator">
+
+            <span></span>
+
+            LIVE DATA
+
+          </div>
+
         </div>
 
 
-        <form id="projectForm" class="form-grid">
+
+        <div class="graph-wrapper">
+
+
+          <div class="y-axis">
+
+            <span>100</span>
+            <span>75</span>
+            <span>50</span>
+            <span>25</span>
+            <span>0</span>
+
+          </div>
+
+
+
+          <div class="graph-area">
+
+
+            <div class="grid-line line-100"></div>
+            <div class="grid-line line-75"></div>
+            <div class="grid-line line-50"></div>
+            <div class="grid-line line-25"></div>
+            <div class="grid-line line-0"></div>
+
+
+
+            <div class="graph-bars">
+
+
+              <!-- PROJECT BAR -->
+
+              <div class="graph-column">
+
+                <div
+                  class="graph-value projects-bar"
+                  id="projectsGraphBar"
+                >
+
+                  <span id="projectsGraphValue">
+                    0
+                  </span>
+
+                </div>
+
+
+                <div class="graph-label">
+                  PROJECTS
+                </div>
+
+              </div>
+
+
+
+              <!-- TASK BAR -->
+
+              <div class="graph-column">
+
+                <div
+                  class="graph-value tasks-bar"
+                  id="tasksGraphBar"
+                >
+
+                  <span id="tasksGraphValue">
+                    0
+                  </span>
+
+                </div>
+
+
+                <div class="graph-label">
+                  TASKS
+                </div>
+
+              </div>
+
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        <div class="graph-legend">
+
+          <div>
+
+            <span class="legend-dot project-dot"></span>
+
+            PROJECTS
+
+          </div>
+
+
+          <div>
+
+            <span class="legend-dot task-dot"></span>
+
+            TASKS
+
+          </div>
+
+
+          <div class="graph-info">
+            DATA SOURCE: LIVE API
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =========================
+           ADD PROJECT
+      ========================== -->
+
+      <section
+        class="content-card terminal-card"
+        id="add-project"
+      >
+
+
+        <div class="section-heading">
+
+          <div>
+
+            <div class="section-code">
+              // MODULE_04
+            </div>
+
+            <h2>
+              CREATE NEW PROJECT
+            </h2>
+
+            <p>
+              Initialize a new project in the workspace
+            </p>
+
+          </div>
+
+
+          <span class="heading-icon">
+            ＋
+          </span>
+
+        </div>
+
+
+
+        <form
+          id="projectForm"
+          class="form-grid"
+        >
+
 
           <div class="input-group">
-            <label for="projectName">Project Name</label>
+
+            <label for="projectName">
+              PROJECT_NAME
+            </label>
 
             <input
               type="text"
               id="projectName"
-              placeholder="Enter project name"
+              placeholder="Enter project name..."
               required
             >
+
           </div>
+
 
 
           <div class="input-group">
-            <label for="projectStatus">Status</label>
+
+            <label for="projectStatus">
+              PROJECT_STATUS
+            </label>
 
             <select id="projectStatus">
-              <option value="Planning">Planning</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
+
+              <option value="Planning">
+                Planning
+              </option>
+
+              <option value="In Progress">
+                In Progress
+              </option>
+
+              <option value="Completed">
+                Completed
+              </option>
+
             </select>
+
           </div>
+
 
 
           <div class="input-group full-width">
-            <label for="projectDescription">Description</label>
+
+            <label for="projectDescription">
+              DESCRIPTION
+            </label>
 
             <textarea
               id="projectDescription"
-              placeholder="Write a short project description..."
+              placeholder="Write project description..."
             ></textarea>
+
           </div>
+
 
 
           <div class="form-action full-width">
+
             <button type="submit">
-              + Add Project
+
+              <span>+</span>
+
+              INITIALIZE PROJECT
+
             </button>
+
           </div>
 
         </form>
+
 
         <p id="projectMessage"></p>
 
       </section>
 
 
-      <!-- Projects -->
-      <section class="content-card" id="projects">
+
+      <!-- =========================
+           PROJECT DATABASE
+      ========================== -->
+
+      <section
+        class="content-card terminal-card"
+        id="projects"
+      >
+
 
         <div class="section-heading">
 
           <div>
-            <h2>Projects</h2>
-            <p>Your current projects</p>
+
+            <div class="section-code">
+              // MODULE_02
+            </div>
+
+            <h2>
+              PROJECT DATABASE
+            </h2>
+
+            <p>
+              Current projects registered in the system
+            </p>
+
           </div>
 
-          <span class="heading-icon">📂</span>
+
+          <span class="heading-icon">
+            ◈
+          </span>
 
         </div>
 
 
-        <div id="projectsList" class="projects-grid">
+
+        <div
+          id="projectsList"
+          class="projects-grid"
+        >
+
           Loading projects...
+
         </div>
 
       </section>
 
 
-      <!-- Add Task -->
-      <section class="content-card" id="add-task">
+
+      <!-- =========================
+           ADD TASK
+      ========================== -->
+
+      <section
+        class="content-card terminal-card"
+        id="add-task"
+      >
+
 
         <div class="section-heading">
 
           <div>
-            <h2>Create New Task</h2>
-            <p>Add a task to your project</p>
+
+            <div class="section-code">
+              // MODULE_05
+            </div>
+
+            <h2>
+              CREATE NEW TASK
+            </h2>
+
+            <p>
+              Add a task to an existing project
+            </p>
+
           </div>
 
-          <span class="heading-icon">✓</span>
+
+          <span class="heading-icon">
+            ＋
+          </span>
 
         </div>
 
 
-        <form id="taskForm" class="form-grid">
+
+        <form
+          id="taskForm"
+          class="form-grid"
+        >
+
+
+          <!-- TASK TITLE -->
 
           <div class="input-group">
-            <label for="taskTitle">Task Title</label>
+
+            <label for="taskTitle">
+              TASK_TITLE
+            </label>
 
             <input
               type="text"
               id="taskTitle"
-              placeholder="Enter task title"
+              placeholder="Enter task title..."
               required
             >
+
           </div>
 
 
+
+          <!-- PROJECT -->
+
           <div class="input-group">
-            <label for="taskProject">Project</label>
+
+            <label for="taskProject">
+              PROJECT
+            </label>
 
             <select id="taskProject">
-              <option value="">Select Project</option>
+
+              <option value="">
+                Select Project
+              </option>
+
             </select>
+
           </div>
 
 
+
+          <!-- STATUS -->
+
           <div class="input-group">
-            <label for="taskStatus">Status</label>
+
+            <label for="taskStatus">
+              TASK_STATUS
+            </label>
 
             <select id="taskStatus">
-              <option value="Pending">Pending</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
+
+              <option value="Pending">
+                Pending
+              </option>
+
+              <option value="In Progress">
+                In Progress
+              </option>
+
+              <option value="Completed">
+                Completed
+              </option>
+
             </select>
+
           </div>
 
 
+
+          <!-- PRIORITY -->
+
           <div class="input-group">
-            <label for="taskPriority">Priority</label>
+
+            <label for="taskPriority">
+              PRIORITY
+            </label>
 
             <select id="taskPriority">
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
+
+              <option value="Low">
+                Low
+              </option>
+
+              <option value="Medium">
+                Medium
+              </option>
+
+              <option value="High">
+                High
+              </option>
+
             </select>
+
           </div>
 
 
+
+          <!-- DUE DATE -->
+
           <div class="input-group">
-            <label for="taskDueDate">Due Date</label>
+
+            <label for="taskDueDate">
+              DUE_DATE
+            </label>
 
             <input
               type="date"
               id="taskDueDate"
             >
+
           </div>
 
 
+
+          <!-- DESCRIPTION -->
+
           <div class="input-group full-width">
-            <label for="taskDescription">Description</label>
+
+            <label for="taskDescription">
+              DESCRIPTION
+            </label>
 
             <textarea
               id="taskDescription"
               placeholder="Describe the task..."
             ></textarea>
+
           </div>
 
+
+
+          <!-- BUTTON -->
 
           <div class="form-action full-width">
 
             <button type="submit">
-              + Add Task
+
+              <span>+</span>
+
+              DEPLOY TASK
+
             </button>
 
           </div>
 
         </form>
 
+
         <p id="taskMessage"></p>
 
       </section>
 
 
-      <!-- Tasks -->
-      <section class="content-card" id="tasks">
+
+      <!-- =========================
+           TASK MONITOR
+      ========================== -->
+
+      <section
+        class="content-card terminal-card"
+        id="tasks"
+      >
+
 
         <div class="section-heading">
 
           <div>
-            <h2>Tasks</h2>
-            <p>Manage your current tasks</p>
+
+            <div class="section-code">
+              // MODULE_03
+            </div>
+
+            <h2>
+              TASK MONITOR
+            </h2>
+
+            <p>
+              Manage and monitor active tasks
+            </p>
+
           </div>
 
-          <span class="heading-icon">✓</span>
+
+          <span class="heading-icon">
+            ✓
+          </span>
 
         </div>
 
 
-        <div id="tasksList" class="tasks-grid">
+
+        <div
+          id="tasksList"
+          class="tasks-grid"
+        >
+
           Loading tasks...
+
         </div>
 
       </section>
 
+
     </main>
 
-  </div>
 
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer class="terminal-footer">
+
+      <span>
+        PROJECTFLOW
+      </span>
+
+      <span>
+        SYSTEM READY
+      </span>
+
+      <span>
+        // FULL STACK DEVELOPMENT
+      </span>
+
+    </footer>
+
+
+  </div>
+  <!-- JAVASCRIPT -->
 
   <script src="script.js"></script>
 
 </body>
 </html>
+```
