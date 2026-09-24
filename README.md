@@ -1,118 +1,218 @@
-# Fieldwork — Project Management Tool (Task 3)
+# ProjectFlow — Project Management Tool
 
-A collaborative project management tool similar to Trello/Asana. Users can
-create group projects, assign tasks, comment on tasks, and see updates from
-teammates in real time via WebSockets.
+A full-stack project management application developed as part of the **CodeAlpha Full Stack Development Internship**.
 
-## Features implemented
+ProjectFlow provides a dashboard for creating and managing projects and tasks through a frontend connected to a Node.js/Express REST API and MongoDB database.
 
-- **Auth system**: register/login with hashed passwords (bcrypt) and JWT sessions.
-- **Projects**: create projects, invite teammates by email, view all projects you own or belong to.
-- **Task boards**: Kanban-style board (To Do / In Progress / Done) with drag-and-drop status changes.
-- **Task cards**: title, description, priority, due date, assignee.
-- **Comments**: comment threads on each task for team communication.
-- **Real-time updates (bonus)**: Socket.io pushes live updates to everyone viewing a project — new tasks, moved tasks, new comments, and new members appear instantly without a refresh.
+## Features Implemented
 
-## Tech stack
+* **Dashboard** — Displays live project and task statistics.
+* **Projects** — Create and view projects with name, description, and status.
+* **Tasks** — Create and view tasks associated with projects.
+* **Task Management** — Edit and delete tasks.
+* **Task Details** — Supports status, priority, due date, description, and project selection.
+* **Backend Status** — Shows whether the backend API is online.
+* **Live Overview** — Displays Projects vs Tasks data from the API.
+* **MongoDB Integration** — Project and task data is stored in MongoDB.
+* **REST API** — Frontend communicates with the Express backend using API requests.
 
-- **Frontend**: HTML, CSS, vanilla JavaScript (no framework needed — keeps it simple and dependency-free)
-- **Backend**: Node.js + Express.js
-- **Database**: MongoDB (via Mongoose)
-- **Auth**: JSON Web Tokens (JWT) + bcryptjs
-- **Real-time**: Socket.io
+## Tech Stack
 
-## Project structure
+### Frontend
 
-```
-project-management-tool/
-├── backend/
-│   ├── config/
-│   │   └── db.js                # MongoDB connection
-│   ├── middleware/
-│   │   └── auth.js              # JWT verification + project membership check
+* HTML5
+* CSS3
+* Vanilla JavaScript
+* Fetch API
+
+### Backend
+
+* Node.js
+* Express.js
+* CORS
+* dotenv
+
+### Database
+
+* MongoDB
+* Mongoose
+* MongoDB Atlas
+
+### Tools
+
+* Visual Studio Code
+* Git
+* GitHub
+* Node.js / npm
+
+## Project Structure
+
+```text
+CodeAlpha_FullStack_Tasks-main/
+│
+├── Project_Management_Tool/
+│   │
+│   ├── frontend/
+│   │   ├── index.html
+│   │   ├── style.css
+│   │   └── script.js
+│   │
 │   ├── models/
-│   │   ├── User.js
-│   │   ├── Project.js
-│   │   ├── Task.js
-│   │   └── Comment.js
-│   ├── routes/
-│   │   ├── authRoutes.js        # /api/auth/*
-│   │   ├── projectRoutes.js     # /api/projects/*
-│   │   └── taskRoutes.js        # /api/tasks/*
-│   ├── server.js                # Express app + Socket.io setup
+│   │   └── Project.js
+│   │
+│   ├── db.js
+│   ├── server.js
+│   ├── Project.js
+│   ├── Task.js
 │   ├── package.json
-│   └── .env.example
-└── frontend/
-    ├── index.html
-    ├── css/styles.css
-    └── js/
-        ├── api.js               # fetch() wrapper for the backend API
-        └── app.js                # UI rendering, state, drag-and-drop, sockets
+│   └── package-lock.json
+│
+├── Task1_Ecommerce/
+│
+└── Task2_SocialMedia/
 ```
 
 ## Setup
 
-### 1. Backend
+### 1. Clone the repository
 
 ```bash
-cd backend
+git clone https://github.com/maheen-dev-2003/CodeAlpha_FullStack_Tasks.git
+```
+
+### 2. Open the Project Management Tool
+
+```bash
+cd CodeAlpha_FullStack_Tasks/Project_Management_Tool
+```
+
+### 3. Install dependencies
+
+```bash
 npm install
-cp .env.example .env
-# edit .env: set MONGO_URI (local MongoDB or MongoDB Atlas) and a JWT_SECRET
-npm run dev        # starts on http://localhost:5000
 ```
 
-You'll need MongoDB running locally (`mongodb://localhost:27017`) or a free
-MongoDB Atlas cluster — just paste its connection string into `MONGO_URI`.
+### 4. Configure MongoDB
 
-### 2. Frontend
+Create a `.env` file inside the `Project_Management_Tool` folder:
 
-The frontend is static — no build step required. From the `frontend/` folder,
-serve it with any static server, for example:
+```env
+MONGO_URI=your_mongodb_connection_string
+```
+
+The application can use a MongoDB Atlas connection string.
+
+### 5. Start the backend
 
 ```bash
-cd frontend
-npx serve .        # or: python3 -m http.server 5500
+npm start
 ```
 
-Then open the printed URL (e.g. `http://localhost:5500`) in your browser.
+The backend runs on:
 
-> If you serve the frontend on a different port, update `CLIENT_URL` in the
-> backend's `.env` so CORS allows it, and update `API_BASE_URL` at the top of
-> `frontend/js/api.js` if your backend isn't on `localhost:5000`.
+```text
+http://127.0.0.1:5000
+```
 
-## How to use it
+### 6. Run the frontend
 
-1. Create an account (or log in).
-2. Click **+ New project** to create a project.
-3. Click **Invite** to add a teammate by email (they must already have an account).
-4. Click **+ Add task** to create task cards; drag cards between columns to update status.
-5. Click any task card to open it, edit details, or leave comments — comments and board changes sync live to every teammate viewing the same project.
+Open the following file with VS Code Live Server:
 
-## API overview
+```text
+Project_Management_Tool/frontend/index.html
+```
 
-| Method | Endpoint                          | Description                     |
-|--------|------------------------------------|----------------------------------|
-| POST   | /api/auth/register                | Create an account                |
-| POST   | /api/auth/login                   | Log in, receive a JWT            |
-| GET    | /api/auth/me                      | Get current user                 |
-| GET    | /api/projects                     | List your projects               |
-| POST   | /api/projects                     | Create a project                 |
-| GET    | /api/projects/:projectId          | Get a project + its tasks        |
-| POST   | /api/projects/:projectId/members  | Invite a member by email         |
-| DELETE | /api/projects/:projectId          | Delete a project (owner only)    |
-| POST   | /api/tasks                        | Create a task                    |
-| PUT    | /api/tasks/:taskId                | Update a task (status, etc.)     |
-| DELETE | /api/tasks/:taskId                | Delete a task                    |
-| GET    | /api/tasks/:taskId/comments       | List comments on a task          |
-| POST   | /api/tasks/:taskId/comments       | Add a comment to a task          |
+The frontend communicates with:
 
-All routes except register/login require `Authorization: Bearer <token>`.
+```text
+http://127.0.0.1:5000/api
+```
 
-## Real-time events (Socket.io)
+## API Endpoints
 
-Client connects with `auth: { token }`. Events emitted by the server:
+### Health Check
 
-- `project:invited`, `project:memberAdded`, `project:deleted`
-- `task:created`, `task:updated`, `task:deleted`
-- `comment:created`
+```text
+GET /api/health
+```
+
+### Projects
+
+```text
+GET    /api/projects
+POST   /api/projects
+PUT    /api/projects/:id
+DELETE /api/projects/:id
+```
+
+### Tasks
+
+```text
+GET    /api/tasks
+POST   /api/tasks
+PUT    /api/tasks/:id
+DELETE /api/tasks/:id
+```
+
+## CRUD Operations
+
+| Operation | Projects | Tasks |
+| --------- | -------- | ----- |
+| Create    | ✅        | ✅     |
+| Read      | ✅        | ✅     |
+| Update    | ✅        | ✅     |
+| Delete    | ✅        | ✅     |
+
+## Dashboard
+
+The ProjectFlow dashboard provides:
+
+* Total Projects
+* Total Tasks
+* Backend Status
+* Live Projects vs Tasks overview
+* Project Database
+* Task Monitor
+* Create Project form
+* Create Task form
+
+## Database
+
+ProjectFlow uses **MongoDB** with **Mongoose**.
+
+MongoDB Atlas can be used as the database service. Database credentials are stored through environment variables rather than being included directly in the source code.
+
+## Security
+
+* Environment variables are used for sensitive database configuration.
+* `.env` is excluded from Git using `.gitignore`.
+* User-generated project and task text is safely escaped before being displayed in the frontend.
+
+## Internship
+
+This project was developed as part of the:
+
+**CodeAlpha Full Stack Development Internship**
+
+The project demonstrates practical experience with:
+
+* Frontend development
+* Backend development
+* REST APIs
+* MongoDB
+* Mongoose
+* CRUD operations
+* API integration
+* Git and GitHub
+
+## Author
+
+**Maheen**
+
+GitHub: https://github.com/maheen-dev-2003/CodeAlpha_FullStack_Tasks
+
+## Project Status
+
+**Completed ✅**
+
+The ProjectFlow application has a functional frontend, Express backend, MongoDB integration, REST API communication, and complete CRUD functionality for projects and tasks.
