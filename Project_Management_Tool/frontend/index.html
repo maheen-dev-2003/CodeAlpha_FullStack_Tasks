@@ -1,908 +1,2445 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>ProjectFlow // Command Center</title>
+    <title>ProjectFlow | Project Management Dashboard</title>
 
-  <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #080d1c;
+            --sidebar: #0d1428;
+            --card: #111a30;
+            --card-light: #151f39;
+            --border: rgba(255,255,255,0.07);
+            --text: #ffffff;
+            --muted: #8993ad;
+            --purple: #a855f7;
+            --purple-light: #c084fc;
+            --blue: #3b82f6;
+            --cyan: #22d3ee;
+            --pink: #ec4899;
+            --green: #22c55e;
+            --orange: #f59e0b;
+            --red: #ef4444;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at 15% 15%, rgba(120,70,220,0.18), transparent 28%),
+                radial-gradient(circle at 90% 80%, rgba(0,180,255,0.10), transparent 25%),
+                var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font-family: inherit;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 235px;
+            height: 100vh;
+            background: rgba(10,16,34,0.97);
+            border-right: 1px solid var(--border);
+            padding: 26px 15px;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 12px 32px;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+            box-shadow: 0 8px 25px rgba(168,85,247,0.35);
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-text span {
+            color: var(--purple-light);
+        }
+
+        .menu-title {
+            color: #59637c;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            padding: 0 13px 10px;
+            text-transform: uppercase;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: #8e98b1;
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 12px 13px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .nav-item:hover {
+            color: white;
+            background: rgba(168,85,247,0.10);
+        }
+
+        .nav-item.active {
+            color: white;
+            background: linear-gradient(
+                90deg,
+                rgba(168,85,247,0.28),
+                rgba(92,59,180,0.10)
+            );
+            border-left: 3px solid var(--purple-light);
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .sidebar-bottom {
+            position: absolute;
+            bottom: 25px;
+            left: 15px;
+            right: 15px;
+        }
+
+        .backend-box {
+            padding: 13px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.035);
+            border: 1px solid var(--border);
+        }
+
+        .backend-title {
+            font-size: 10px;
+            color: #69748e;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .backend-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #f59e0b;
+            box-shadow: 0 0 8px #f59e0b;
+        }
+
+        .status-dot.online {
+            background: #22c55e;
+            box-shadow: 0 0 8px #22c55e;
+        }
+
+        .status-dot.offline {
+            background: #ef4444;
+            box-shadow: 0 0 8px #ef4444;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 235px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .welcome h1 {
+            font-size: 27px;
+            font-weight: 750;
+            margin-bottom: 5px;
+        }
+
+        .welcome p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .date-box {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: #9ca7c0;
+            font-size: 12px;
+        }
+
+        .avatar {
+            width: 39px;
+            height: 39px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #9333ea, #2563eb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        /* ================= STAT CARDS ================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 17px;
+            margin-bottom: 18px;
+        }
+
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(
+                145deg,
+                rgba(20,29,52,0.98),
+                rgba(14,22,41,0.98)
+            );
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 19px;
+            min-height: 125px;
+        }
+
+        .stat-card::after {
+            content: "";
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            right: -45px;
+            bottom: -50px;
+            background: var(--glow);
+            filter: blur(35px);
+            opacity: 0.28;
+        }
+
+        .stat-card.purple {
+            --glow: #a855f7;
+        }
+
+        .stat-card.blue {
+            --glow: #3b82f6;
+        }
+
+        .stat-card.cyan {
+            --glow: #06b6d4;
+        }
+
+        .stat-card.pink {
+            --glow: #ec4899;
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-label {
+            color: #8993ac;
+            font-size: 12px;
+        }
+
+        .stat-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255,255,255,0.06);
+            font-size: 14px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 800;
+            margin-top: 12px;
+        }
+
+        .stat-change {
+            font-size: 10px;
+            color: #64708b;
+            margin-top: 3px;
+        }
+
+        /* ================= GRID ================= */
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.55fr 1fr;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .card {
+            background: rgba(16,25,46,0.93);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 17px 18px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .card-subtitle {
+            color: #69748d;
+            font-size: 10px;
+            margin-top: 4px;
+        }
+
+        .chart-wrap {
+            padding: 5px 15px 14px;
+            height: 250px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ================= DONUT ================= */
+
+        .donut-area {
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            padding: 15px;
+        }
+
+        .donut {
+            width: 145px;
+            height: 145px;
+            border-radius: 50%;
+            background:
+                conic-gradient(
+                    #a855f7 0deg,
+                    #a855f7 120deg,
+                    #3b82f6 120deg,
+                    #3b82f6 235deg,
+                    #22d3ee 235deg,
+                    #22d3ee 300deg,
+                    #334155 300deg,
+                    #334155 360deg
+                );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 0 35px rgba(168,85,247,0.12);
+        }
+
+        .donut::before {
+            content: "";
+            position: absolute;
+            width: 94px;
+            height: 94px;
+            border-radius: 50%;
+            background: #111a30;
+        }
+
+        .donut-center {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .donut-number {
+            font-size: 23px;
+            font-weight: 800;
+        }
+
+        .donut-label {
+            font-size: 9px;
+            color: #7e89a2;
+        }
+
+        .legend {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #929db5;
+            font-size: 11px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .legend-value {
+            color: white;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        /* ================= LOWER GRID ================= */
+
+        .lower-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 18px;
+        }
+
+        .projects-container {
+            padding: 8px 15px 16px;
+        }
+
+        .project-row {
+            display: grid;
+            grid-template-columns: 1fr 105px 85px;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .project-row:last-child {
+            border-bottom: none;
+        }
+
+        .project-name {
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .project-description {
+            color: #69748d;
+            font-size: 10px;
+            margin-top: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 280px;
+        }
+
+        .progress-wrap {
+            width: 100%;
+        }
+
+        .progress-text {
+            color: #7f8aa3;
+            font-size: 9px;
+            margin-bottom: 5px;
+        }
+
+        .progress {
+            height: 5px;
+            background: #202a42;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #a855f7, #3b82f6);
+        }
+
+        .badge {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 5px 8px;
+            border-radius: 20px;
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .badge.completed {
+            color: #4ade80;
+            background: rgba(34,197,94,0.10);
+        }
+
+        .badge.progressing {
+            color: #c084fc;
+            background: rgba(168,85,247,0.11);
+        }
+
+        .badge.pending {
+            color: #fbbf24;
+            background: rgba(245,158,11,0.10);
+        }
+
+        .empty {
+            color: #66718a;
+            text-align: center;
+            padding: 35px 15px;
+            font-size: 12px;
+        }
+
+        /* ================= PRIORITY CHART ================= */
+
+        .bars {
+            height: 245px;
+            padding: 25px 25px 20px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            gap: 18px;
+        }
+
+        .bar-group {
+            height: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .bar-value {
+            font-size: 10px;
+            color: #8c97b0;
+        }
+
+        .bar {
+            width: 28px;
+            max-height: 145px;
+            min-height: 8px;
+            border-radius: 6px 6px 2px 2px;
+            background: linear-gradient(
+                to top,
+                #8b5cf6,
+                #22d3ee
+            );
+            box-shadow: 0 0 15px rgba(59,130,246,0.16);
+            transition: height 0.5s ease;
+        }
+
+        .bar-label {
+            color: #7c87a0;
+            font-size: 9px;
+        }
+
+        /* ================= ADD PROJECT ================= */
+
+        .add-project {
+            margin-top: 18px;
+            background: rgba(16,25,46,0.93);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .add-header {
+            margin-bottom: 15px;
+        }
+
+        .add-header h2 {
+            font-size: 15px;
+        }
+
+        .add-header p {
+            color: #68748c;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 160px 110px;
+            gap: 10px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: #0c1427;
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 9px;
+            padding: 11px 12px;
+            color: white;
+            outline: none;
+            font-size: 11px;
+        }
+
+        .form-input::placeholder {
+            color: #5d6880;
+        }
+
+        .form-input:focus {
+            border-color: rgba(168,85,247,0.65);
+            box-shadow: 0 0 0 3px rgba(168,85,247,0.07);
+        }
+
+        select.form-input {
+            cursor: pointer;
+        }
+
+        option {
+            background: #10192e;
+            color: white;
+        }
+
+        .add-btn {
+            border: none;
+            border-radius: 9px;
+            background: linear-gradient(135deg, #a855f7, #6366f1);
+            color: white;
+            font-weight: 700;
+            font-size: 11px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(139,92,246,0.25);
+        }
+
+        .add-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* ================= TOAST ================= */
+
+        .toast {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            background: #151f36;
+            border: 1px solid rgba(255,255,255,0.08);
+            color: white;
+            padding: 13px 17px;
+            border-radius: 10px;
+            font-size: 12px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: 0.3s;
+            z-index: 999;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-left: 3px solid #22c55e;
+        }
+
+        .toast.error {
+            border-left: 3px solid #ef4444;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1100px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .add-btn {
+                min-height: 40px;
+            }
+        }
+
+        @media (max-width: 850px) {
+            .sidebar {
+                width: 70px;
+                padding: 20px 9px;
+            }
+
+            .logo {
+                justify-content: center;
+                padding: 0 0 25px;
+            }
+
+            .logo-text,
+            .menu-title,
+            .nav-item span:not(.nav-icon),
+            .sidebar-bottom {
+                display: none;
+            }
+
+            .nav-item {
+                justify-content: center;
+                padding: 13px;
+            }
+
+            .main {
+                margin-left: 70px;
+                padding: 20px;
+            }
+
+            .dashboard-grid,
+            .lower-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .main {
+                padding: 14px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 14px;
+            }
+
+            .stat-number {
+                font-size: 22px;
+            }
+
+            .welcome h1 {
+                font-size: 21px;
+            }
+
+            .date-box {
+                display: none;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .project-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-  <!-- Background -->
-  <div class="cyber-grid"></div>
-  <div class="scanlines"></div>
+    <!-- ================= SIDEBAR ================= -->
 
+    <aside class="sidebar">
 
-  <!-- =========================
-       SIDEBAR
-  ========================== -->
+        <div class="logo">
+            <div class="logo-icon">✦</div>
 
-  <aside class="sidebar">
-
-    <div class="logo">
-
-      <div class="logo-icon">P</div>
-
-      <div>
-        <span>PROJECTFLOW</span>
-        <small>// COMMAND CENTER</small>
-      </div>
-
-    </div>
-
-
-    <nav>
-
-      <a href="#dashboard" class="active">
-        <span class="nav-code">01</span>
-        <span>▣ DASHBOARD</span>
-      </a>
-
-      <a href="#projects">
-        <span class="nav-code">02</span>
-        <span>▤ PROJECTS</span>
-      </a>
-
-      <a href="#tasks">
-        <span class="nav-code">03</span>
-        <span>✓ TASKS</span>
-      </a>
-
-      <a href="#add-project">
-        <span class="nav-code">04</span>
-        <span>＋ NEW PROJECT</span>
-      </a>
-
-      <a href="#add-task">
-        <span class="nav-code">05</span>
-        <span>＋ NEW TASK</span>
-      </a>
-
-    </nav>
-
-
-    <!-- System Status -->
-
-    <div class="system-box">
-
-      <div class="system-title">
-        SYSTEM STATUS
-      </div>
-
-      <div class="system-row">
-        <span>DATABASE</span>
-        <span class="online-text">
-          ● ONLINE
-        </span>
-      </div>
-
-      <div class="system-row">
-        <span>API</span>
-        <span class="online-text">
-          ● ACTIVE
-        </span>
-      </div>
-
-      <div class="system-row">
-        <span>MODE</span>
-        <span>
-          DEV
-        </span>
-      </div>
-
-    </div>
-
-
-    <!-- Sidebar Footer -->
-
-    <div class="sidebar-bottom">
-
-      <p>PROJECT MANAGEMENT</p>
-
-      <small>
-        FULL STACK APPLICATION
-      </small>
-
-      <small>
-        v1.0.0 // SECURE
-      </small>
-
-    </div>
-
-  </aside>
-
-
-
-  <!-- =========================
-       MAIN CONTENT
-  ========================== -->
-
-  <div class="main-content">
-
-
-    <!-- TOP HEADER -->
-
-    <header class="topbar">
-
-      <div class="page-title">
-
-        <h1>
-          DASHBOARD<span class="blink">_</span>
-        </h1>
-
-        <p>
-          // PROJECT MANAGEMENT COMMAND CENTER
-        </p>
-
-      </div>
-
-
-      <div class="status-badge">
-
-        <span class="status-dot"></span>
-
-        <span id="serverStatus">
-          CHECKING...
-        </span>
-
-      </div>
-
-    </header>
-
-
-
-    <main id="dashboard">
-
-
-      <!-- =========================
-           STATISTICS
-      ========================== -->
-
-      <section class="stats">
-
-
-        <!-- PROJECTS -->
-
-        <div class="stat-card projects-stat">
-
-          <div class="card-glow"></div>
-
-          <div class="stat-top">
-
-            <span>
-              PROJECTS
-            </span>
-
-            <span class="stat-code">
-              [01]
-            </span>
-
-          </div>
-
-
-          <div class="stat-icon">
-            ◈
-          </div>
-
-
-          <div class="stat-number">
-
-            <h2 id="projectCount">
-              0
-            </h2>
-
-          </div>
-
-
-          <div class="stat-label">
-            TOTAL PROJECTS
-          </div>
-
-
-          <div class="progress-line">
-            <span></span>
-          </div>
-
+            <div class="logo-text">
+                Project<span>Flow</span>
+            </div>
         </div>
 
+        <div class="menu-title">Workspace</div>
 
+        <nav class="nav">
 
-        <!-- TASKS -->
+            <a href="#" class="nav-item active">
+                <span class="nav-icon">▦</span>
+                <span>Dashboard</span>
+            </a>
 
-        <div class="stat-card tasks-stat">
+            <a href="#projects" class="nav-item">
+                <span class="nav-icon">▣</span>
+                <span>Projects</span>
+            </a>
 
-          <div class="card-glow"></div>
+            <a href="#tasks" class="nav-item">
+                <span class="nav-icon">✓</span>
+                <span>Tasks</span>
+            </a>
 
-          <div class="stat-top">
+            <a href="#team" class="nav-item">
+                <span class="nav-icon">♙</span>
+                <span>Team</span>
+            </a>
 
-            <span>
-              TASKS
-            </span>
+            <a href="#reports" class="nav-item">
+                <span class="nav-icon">▤</span>
+                <span>Reports</span>
+            </a>
 
-            <span class="stat-code">
-              [02]
-            </span>
+        </nav>
 
-          </div>
-
-
-          <div class="stat-icon">
-            ◆
-          </div>
-
-
-          <div class="stat-number">
-
-            <h2 id="taskCount">
-              0
-            </h2>
-
-          </div>
-
-
-          <div class="stat-label">
-            TOTAL TASKS
-          </div>
-
-
-          <div class="progress-line">
-            <span></span>
-          </div>
-
+        <div class="menu-title" style="margin-top:30px;">
+            Management
         </div>
 
+        <nav class="nav">
 
+            <a href="#add" class="nav-item">
+                <span class="nav-icon">＋</span>
+                <span>Add Project</span>
+            </a>
 
-        <!-- SERVER -->
+            <a href="#" class="nav-item" onclick="refreshDashboard(); return false;">
+                <span class="nav-icon">↻</span>
+                <span>Refresh Data</span>
+            </a>
 
-        <div class="stat-card server-stat">
+        </nav>
 
-          <div class="card-glow"></div>
+        <div class="sidebar-bottom">
 
-          <div class="stat-top">
+            <div class="backend-box">
 
-            <span>
-              SYSTEM
-            </span>
+                <div class="backend-title">
+                    Backend Status
+                </div>
 
-            <span class="stat-code">
-              [03]
-            </span>
+                <div class="backend-status">
 
-          </div>
+                    <span id="statusDot" class="status-dot"></span>
 
+                    <span id="backendStatus">
+                        Checking...
+                    </span>
 
-          <div class="stat-icon">
-            ⚡
-          </div>
+                </div>
 
-
-          <div class="stat-number status-number">
-
-            <h2 id="serverStatusCard">
-              CHECKING...
-            </h2>
-
-          </div>
-
-
-          <div class="stat-label">
-            BACKEND STATUS
-          </div>
-
-
-          <div class="progress-line">
-            <span></span>
-          </div>
-
-        </div>
-
-      </section>
-
-
-
-      <!-- =========================
-           LIVE GRAPH
-      ========================== -->
-
-      <section class="graph-card">
-
-
-        <div class="graph-header">
-
-          <div>
-
-            <div class="section-code">
-              // DATA_VISUALIZATION
             </div>
 
-            <h2>
-              LIVE SYSTEM OVERVIEW
-            </h2>
+        </div>
 
-            <p>
-              Real-time Projects vs Tasks analysis
-            </p>
-
-          </div>
+    </aside>
 
 
-          <div class="live-indicator">
+    <!-- ================= MAIN ================= -->
 
-            <span></span>
+    <main class="main">
 
-            LIVE DATA
+        <!-- TOP BAR -->
 
-          </div>
+        <div class="topbar">
+
+            <div class="welcome">
+
+                <h1>Dashboard</h1>
+
+                <p>
+                    Welcome back! Here's what's happening with your projects.
+                </p>
+
+            </div>
+
+            <div class="top-actions">
+
+                <div class="date-box" id="currentDate">
+                    Loading date...
+                </div>
+
+                <div class="avatar">
+                    M
+                </div>
+
+            </div>
 
         </div>
 
 
+        <!-- ================= STATISTICS ================= -->
 
-        <div class="graph-wrapper">
+        <section class="stats">
+
+            <div class="stat-card purple">
+
+                <div class="stat-top">
+
+                    <div class="stat-label">
+                        Total Projects
+                    </div>
+
+                    <div class="stat-icon">
+                        ◈
+                    </div>
+
+                </div>
+
+                <div class="stat-number" id="projectCount">
+                    0
+                </div>
+
+                <div class="stat-change">
+                    Active projects in workspace
+                </div>
+
+            </div>
 
 
-          <div class="y-axis">
+            <div class="stat-card blue">
 
-            <span>100</span>
-            <span>75</span>
-            <span>50</span>
-            <span>25</span>
-            <span>0</span>
+                <div class="stat-top">
 
-          </div>
+                    <div class="stat-label">
+                        Total Tasks
+                    </div>
+
+                    <div class="stat-icon">
+                        ✓
+                    </div>
+
+                </div>
+
+                <div class="stat-number" id="taskCount">
+                    0
+                </div>
+
+                <div class="stat-change">
+                    Tasks across all projects
+                </div>
+
+            </div>
 
 
+            <div class="stat-card cyan">
 
-          <div class="graph-area">
+                <div class="stat-top">
+
+                    <div class="stat-label">
+                        Completed Tasks
+                    </div>
+
+                    <div class="stat-icon">
+                        ✓
+                    </div>
+
+                </div>
+
+                <div class="stat-number" id="completedCount">
+                    0
+                </div>
+
+                <div class="stat-change">
+                    Successfully completed
+                </div>
+
+            </div>
 
 
-            <div class="grid-line line-100"></div>
-            <div class="grid-line line-75"></div>
-            <div class="grid-line line-50"></div>
-            <div class="grid-line line-25"></div>
-            <div class="grid-line line-0"></div>
+            <div class="stat-card pink">
+
+                <div class="stat-top">
+
+                    <div class="stat-label">
+                        Pending Tasks
+                    </div>
+
+                    <div class="stat-icon">
+                        ◷
+                    </div>
+
+                </div>
+
+                <div class="stat-number" id="pendingCount">
+                    0
+                </div>
+
+                <div class="stat-change">
+                    Tasks still in progress
+                </div>
+
+            </div>
+
+        </section>
 
 
+        <!-- ================= CHARTS ================= -->
 
-            <div class="graph-bars">
+        <section class="dashboard-grid">
+
+            <!-- TASK OVERVIEW -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <div>
+                        <div class="card-title">
+                            Tasks Overview
+                        </div>
+
+                        <div class="card-subtitle">
+                            Current task distribution
+                        </div>
+                    </div>
+
+                    <div class="card-subtitle">
+                        LIVE DATA
+                    </div>
+
+                </div>
+
+                <div class="chart-wrap">
+
+                    <canvas id="lineChart"></canvas>
+
+                </div>
+
+            </div>
 
 
-              <!-- PROJECT BAR -->
+            <!-- TASK STATUS -->
 
-              <div class="graph-column">
+            <div class="card">
+
+                <div class="card-header">
+
+                    <div>
+                        <div class="card-title">
+                            Task Status
+                        </div>
+
+                        <div class="card-subtitle">
+                            Distribution by status
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="donut-area">
+
+                    <div class="donut">
+
+                        <div class="donut-center">
+
+                            <div class="donut-number" id="donutTotal">
+                                0
+                            </div>
+
+                            <div class="donut-label">
+                                TOTAL TASKS
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="legend">
+
+                        <div class="legend-item">
+
+                            <span
+                                class="legend-dot"
+                                style="background:#a855f7;">
+                            </span>
+
+                            In Progress
+
+                            <span
+                                class="legend-value"
+                                id="progressLegend">
+                                0
+                            </span>
+
+                        </div>
+
+
+                        <div class="legend-item">
+
+                            <span
+                                class="legend-dot"
+                                style="background:#3b82f6;">
+                            </span>
+
+                            Completed
+
+                            <span
+                                class="legend-value"
+                                id="completedLegend">
+                                0
+                            </span>
+
+                        </div>
+
+
+                        <div class="legend-item">
+
+                            <span
+                                class="legend-dot"
+                                style="background:#22d3ee;">
+                            </span>
+
+                            Pending
+
+                            <span
+                                class="legend-value"
+                                id="pendingLegend">
+                                0
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= PROJECTS + PRIORITY ================= -->
+
+        <section class="lower-grid">
+
+            <!-- PROJECT LIST -->
+
+            <div class="card" id="projects">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <div class="card-title">
+                            Your Current Projects
+                        </div>
+
+                        <div class="card-subtitle">
+                            Projects stored in your database
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="card-subtitle"
+                        id="projectCountSmall">
+                        0 PROJECTS
+                    </div>
+
+                </div>
 
                 <div
-                  class="graph-value projects-bar"
-                  id="projectsGraphBar"
+                    class="projects-container"
+                    id="projectsList">
+
+                    <div class="empty">
+                        Loading projects...
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PRIORITY -->
+
+            <div class="card" id="reports">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <div class="card-title">
+                            Tasks by Priority
+                        </div>
+
+                        <div class="card-subtitle">
+                            Current priority distribution
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="bars">
+
+                    <div class="bar-group">
+
+                        <div
+                            class="bar-value"
+                            id="highValue">
+                            0
+                        </div>
+
+                        <div
+                            class="bar"
+                            id="highBar"
+                            style="height:8px;">
+                        </div>
+
+                        <div class="bar-label">
+                            HIGH
+                        </div>
+
+                    </div>
+
+
+                    <div class="bar-group">
+
+                        <div
+                            class="bar-value"
+                            id="mediumValue">
+                            0
+                        </div>
+
+                        <div
+                            class="bar"
+                            id="mediumBar"
+                            style="height:8px;">
+                        </div>
+
+                        <div class="bar-label">
+                            MEDIUM
+                        </div>
+
+                    </div>
+
+
+                    <div class="bar-group">
+
+                        <div
+                            class="bar-value"
+                            id="lowValue">
+                            0
+                        </div>
+
+                        <div
+                            class="bar"
+                            id="lowBar"
+                            style="height:8px;">
+                        </div>
+
+                        <div class="bar-label">
+                            LOW
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= ADD PROJECT ================= -->
+
+        <section
+            class="add-project"
+            id="add">
+
+            <div class="add-header">
+
+                <h2>
+                    Add New Project
+                </h2>
+
+                <p>
+                    Create a project and save it directly to MongoDB.
+                </p>
+
+            </div>
+
+            <form
+                id="projectForm"
+                class="form-grid">
+
+                <input
+                    id="projectName"
+                    class="form-input"
+                    type="text"
+                    placeholder="Project name"
+                    required
                 >
 
-                  <span id="projectsGraphValue">
-                    0
-                  </span>
-
-                </div>
-
-
-                <div class="graph-label">
-                  PROJECTS
-                </div>
-
-              </div>
-
-
-
-              <!-- TASK BAR -->
-
-              <div class="graph-column">
-
-                <div
-                  class="graph-value tasks-bar"
-                  id="tasksGraphBar"
+                <input
+                    id="projectDescription"
+                    class="form-input"
+                    type="text"
+                    placeholder="Project description"
                 >
 
-                  <span id="tasksGraphValue">
-                    0
-                  </span>
+                <select
+                    id="projectStatus"
+                    class="form-input">
 
-                </div>
+                    <option value="Not Started">
+                        Not Started
+                    </option>
 
+                    <option value="In Progress">
+                        In Progress
+                    </option>
 
-                <div class="graph-label">
-                  TASKS
-                </div>
+                    <option value="Completed">
+                        Completed
+                    </option>
 
-              </div>
+                </select>
 
+                <button
+                    id="addProjectButton"
+                    class="add-btn"
+                    type="submit">
 
-            </div>
+                    + Add Project
 
-          </div>
+                </button>
 
-        </div>
+            </form>
 
-
-
-        <div class="graph-legend">
-
-          <div>
-
-            <span class="legend-dot project-dot"></span>
-
-            PROJECTS
-
-          </div>
-
-
-          <div>
-
-            <span class="legend-dot task-dot"></span>
-
-            TASKS
-
-          </div>
-
-
-          <div class="graph-info">
-            DATA SOURCE: LIVE API
-          </div>
-
-        </div>
-
-      </section>
-
-
-
-      <!-- =========================
-           ADD PROJECT
-      ========================== -->
-
-      <section
-        class="content-card terminal-card"
-        id="add-project"
-      >
-
-
-        <div class="section-heading">
-
-          <div>
-
-            <div class="section-code">
-              // MODULE_04
-            </div>
-
-            <h2>
-              CREATE NEW PROJECT
-            </h2>
-
-            <p>
-              Initialize a new project in the workspace
-            </p>
-
-          </div>
-
-
-          <span class="heading-icon">
-            ＋
-          </span>
-
-        </div>
-
-
-
-        <form
-          id="projectForm"
-          class="form-grid"
-        >
-
-
-          <div class="input-group">
-
-            <label for="projectName">
-              PROJECT_NAME
-            </label>
-
-            <input
-              type="text"
-              id="projectName"
-              placeholder="Enter project name..."
-              required
-            >
-
-          </div>
-
-
-
-          <div class="input-group">
-
-            <label for="projectStatus">
-              PROJECT_STATUS
-            </label>
-
-            <select id="projectStatus">
-
-              <option value="Planning">
-                Planning
-              </option>
-
-              <option value="In Progress">
-                In Progress
-              </option>
-
-              <option value="Completed">
-                Completed
-              </option>
-
-            </select>
-
-          </div>
-
-
-
-          <div class="input-group full-width">
-
-            <label for="projectDescription">
-              DESCRIPTION
-            </label>
-
-            <textarea
-              id="projectDescription"
-              placeholder="Write project description..."
-            ></textarea>
-
-          </div>
-
-
-
-          <div class="form-action full-width">
-
-            <button type="submit">
-
-              <span>+</span>
-
-              INITIALIZE PROJECT
-
-            </button>
-
-          </div>
-
-        </form>
-
-
-        <p id="projectMessage"></p>
-
-      </section>
-
-
-
-      <!-- =========================
-           PROJECT DATABASE
-      ========================== -->
-
-      <section
-        class="content-card terminal-card"
-        id="projects"
-      >
-
-
-        <div class="section-heading">
-
-          <div>
-
-            <div class="section-code">
-              // MODULE_02
-            </div>
-
-            <h2>
-              PROJECT DATABASE
-            </h2>
-
-            <p>
-              Current projects registered in the system
-            </p>
-
-          </div>
-
-
-          <span class="heading-icon">
-            ◈
-          </span>
-
-        </div>
-
-
-
-        <div
-          id="projectsList"
-          class="projects-grid"
-        >
-
-          Loading projects...
-
-        </div>
-
-      </section>
-
-
-
-      <!-- =========================
-           ADD TASK
-      ========================== -->
-
-      <section
-        class="content-card terminal-card"
-        id="add-task"
-      >
-
-
-        <div class="section-heading">
-
-          <div>
-
-            <div class="section-code">
-              // MODULE_05
-            </div>
-
-            <h2>
-              CREATE NEW TASK
-            </h2>
-
-            <p>
-              Add a task to an existing project
-            </p>
-
-          </div>
-
-
-          <span class="heading-icon">
-            ＋
-          </span>
-
-        </div>
-
-
-
-        <form
-          id="taskForm"
-          class="form-grid"
-        >
-
-
-          <!-- TASK TITLE -->
-
-          <div class="input-group">
-
-            <label for="taskTitle">
-              TASK_TITLE
-            </label>
-
-            <input
-              type="text"
-              id="taskTitle"
-              placeholder="Enter task title..."
-              required
-            >
-
-          </div>
-
-
-
-          <!-- PROJECT -->
-
-          <div class="input-group">
-
-            <label for="taskProject">
-              PROJECT
-            </label>
-
-            <select id="taskProject">
-
-              <option value="">
-                Select Project
-              </option>
-
-            </select>
-
-          </div>
-
-
-
-          <!-- STATUS -->
-
-          <div class="input-group">
-
-            <label for="taskStatus">
-              TASK_STATUS
-            </label>
-
-            <select id="taskStatus">
-
-              <option value="Pending">
-                Pending
-              </option>
-
-              <option value="In Progress">
-                In Progress
-              </option>
-
-              <option value="Completed">
-                Completed
-              </option>
-
-            </select>
-
-          </div>
-
-
-
-          <!-- PRIORITY -->
-
-          <div class="input-group">
-
-            <label for="taskPriority">
-              PRIORITY
-            </label>
-
-            <select id="taskPriority">
-
-              <option value="Low">
-                Low
-              </option>
-
-              <option value="Medium">
-                Medium
-              </option>
-
-              <option value="High">
-                High
-              </option>
-
-            </select>
-
-          </div>
-
-
-
-          <!-- DUE DATE -->
-
-          <div class="input-group">
-
-            <label for="taskDueDate">
-              DUE_DATE
-            </label>
-
-            <input
-              type="date"
-              id="taskDueDate"
-            >
-
-          </div>
-
-
-
-          <!-- DESCRIPTION -->
-
-          <div class="input-group full-width">
-
-            <label for="taskDescription">
-              DESCRIPTION
-            </label>
-
-            <textarea
-              id="taskDescription"
-              placeholder="Describe the task..."
-            ></textarea>
-
-          </div>
-
-
-
-          <!-- BUTTON -->
-
-          <div class="form-action full-width">
-
-            <button type="submit">
-
-              <span>+</span>
-
-              DEPLOY TASK
-
-            </button>
-
-          </div>
-
-        </form>
-
-
-        <p id="taskMessage"></p>
-
-      </section>
-
-
-
-      <!-- =========================
-           TASK MONITOR
-      ========================== -->
-
-      <section
-        class="content-card terminal-card"
-        id="tasks"
-      >
-
-
-        <div class="section-heading">
-
-          <div>
-
-            <div class="section-code">
-              // MODULE_03
-            </div>
-
-            <h2>
-              TASK MONITOR
-            </h2>
-
-            <p>
-              Manage and monitor active tasks
-            </p>
-
-          </div>
-
-
-          <span class="heading-icon">
-            ✓
-          </span>
-
-        </div>
-
-
-
-        <div
-          id="tasksList"
-          class="tasks-grid"
-        >
-
-          Loading tasks...
-
-        </div>
-
-      </section>
-
+        </section>
 
     </main>
 
 
+    <!-- TOAST -->
 
-    <!-- =========================
-         FOOTER
-    ========================== -->
-
-    <footer class="terminal-footer">
-
-      <span>
-        PROJECTFLOW
-      </span>
-
-      <span>
-        SYSTEM READY
-      </span>
-
-      <span>
-        // FULL STACK DEVELOPMENT
-      </span>
-
-    </footer>
+    <div
+        id="toast"
+        class="toast">
+    </div>
 
 
-  </div>
-  <!-- JAVASCRIPT -->
+    <!-- ================= JAVASCRIPT ================= -->
 
-  <script src="script.js"></script>
+    <script>
+
+        /* ==========================================
+           BACKEND URL
+        ========================================== */
+
+        const API_URL = "http://localhost:5000";
+
+
+        /* ==========================================
+           GLOBAL DATA
+        ========================================== */
+
+        let projects = [];
+        let tasks = [];
+
+
+        /* ==========================================
+           DATE
+        ========================================== */
+
+        function showDate() {
+
+            const date = new Date();
+
+            document.getElementById("currentDate").textContent =
+                date.toLocaleDateString("en-US", {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric"
+                });
+        }
+
+
+        /* ==========================================
+           TOAST MESSAGE
+        ========================================== */
+
+        function showToast(message, type = "success") {
+
+            const toast =
+                document.getElementById("toast");
+
+            toast.textContent = message;
+
+            toast.className =
+                "toast show " + type;
+
+            setTimeout(() => {
+
+                toast.className = "toast";
+
+            }, 3000);
+        }
+
+
+        /* ==========================================
+           BACKEND STATUS
+        ========================================== */
+
+        async function checkBackend() {
+
+            const dot =
+                document.getElementById("statusDot");
+
+            const status =
+                document.getElementById("backendStatus");
+
+            try {
+
+                const response =
+                    await fetch(
+                        API_URL + "/api/health"
+                    );
+
+                if (!response.ok) {
+                    throw new Error("Backend error");
+                }
+
+                dot.className =
+                    "status-dot online";
+
+                status.textContent =
+                    "Connected";
+
+            } catch (error) {
+
+                dot.className =
+                    "status-dot offline";
+
+                status.textContent =
+                    "Offline";
+
+            }
+        }
+
+
+        /* ==========================================
+           LOAD PROJECTS
+        ========================================== */
+
+        async function loadProjects() {
+
+            try {
+
+                const response =
+                    await fetch(
+                        API_URL + "/api/projects"
+                    );
+
+                if (!response.ok) {
+                    throw new Error(
+                        "Could not load projects"
+                    );
+                }
+
+                const data =
+                    await response.json();
+
+                projects =
+                    Array.isArray(data)
+                        ? data
+                        : [];
+
+                renderProjects();
+
+                updateDashboard();
+
+            } catch (error) {
+
+                console.error(
+                    "Project error:",
+                    error
+                );
+
+                document.getElementById(
+                    "projectsList"
+                ).innerHTML = `
+                    <div class="empty">
+                        Unable to load projects.
+                        <br><br>
+                        Make sure your backend is running on port 5000.
+                    </div>
+                `;
+
+            }
+        }
+
+
+        /* ==========================================
+           LOAD TASKS
+        ========================================== */
+
+        async function loadTasks() {
+
+            try {
+
+                const response =
+                    await fetch(
+                        API_URL + "/api/tasks"
+                    );
+
+                if (!response.ok) {
+                    throw new Error(
+                        "Could not load tasks"
+                    );
+                }
+
+                const data =
+                    await response.json();
+
+                tasks =
+                    Array.isArray(data)
+                        ? data
+                        : [];
+
+                updateDashboard();
+
+            } catch (error) {
+
+                console.error(
+                    "Task error:",
+                    error
+                );
+
+                tasks = [];
+
+                updateDashboard();
+
+            }
+        }
+
+
+        /* ==========================================
+           RENDER PROJECTS
+        ========================================== */
+
+        function renderProjects() {
+
+            const container =
+                document.getElementById(
+                    "projectsList"
+                );
+
+            if (!projects.length) {
+
+                container.innerHTML = `
+                    <div class="empty">
+                        No projects yet.
+                        <br>
+                        Create your first project below.
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            container.innerHTML =
+                projects.slice(0, 7).map(
+                    project => {
+
+                        const status =
+                            project.status ||
+                            "Not Started";
+
+                        let badgeClass =
+                            "pending";
+
+                        if (
+                            status.toLowerCase()
+                            .includes("progress")
+                        ) {
+
+                            badgeClass =
+                                "progressing";
+
+                        } else if (
+                            status.toLowerCase()
+                            .includes("complete")
+                        ) {
+
+                            badgeClass =
+                                "completed";
+
+                        }
+
+
+                        let progress = 10;
+
+                        if (
+                            status.toLowerCase()
+                            .includes("progress")
+                        ) {
+                            progress = 55;
+                        }
+
+                        if (
+                            status.toLowerCase()
+                            .includes("complete")
+                        ) {
+                            progress = 100;
+                        }
+
+
+                        return `
+
+                            <div class="project-row">
+
+                                <div>
+
+                                    <div class="project-name">
+                                        ${escapeHtml(
+                                            project.name ||
+                                            "Untitled Project"
+                                        )}
+                                    </div>
+
+                                    <div class="project-description">
+                                        ${escapeHtml(
+                                            project.description ||
+                                            "No description provided"
+                                        )}
+                                    </div>
+
+                                </div>
+
+
+                                <div class="progress-wrap">
+
+                                    <div class="progress-text">
+                                        ${progress}% complete
+                                    </div>
+
+                                    <div class="progress">
+
+                                        <div
+                                            class="progress-bar"
+                                            style="
+                                                width:${progress}%;
+                                            ">
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span
+                                        class="badge ${badgeClass}">
+                                        ${escapeHtml(status)}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+                    }
+                ).join("");
+        }
+
+
+        /* ==========================================
+           UPDATE DASHBOARD
+        ========================================== */
+
+        function updateDashboard() {
+
+            const totalProjects =
+                projects.length;
+
+            const totalTasks =
+                tasks.length;
+
+
+            const completed =
+                tasks.filter(task =>
+                    String(
+                        task.status || ""
+                    ).toLowerCase()
+                    .includes("completed")
+                ).length;
+
+
+            const progress =
+                tasks.filter(task =>
+                    String(
+                        task.status || ""
+                    ).toLowerCase()
+                    .includes("progress")
+                ).length;
+
+
+            const pending =
+                totalTasks -
+                completed -
+                progress;
+
+
+            document.getElementById(
+                "projectCount"
+            ).textContent =
+                totalProjects;
+
+
+            document.getElementById(
+                "taskCount"
+            ).textContent =
+                totalTasks;
+
+
+            document.getElementById(
+                "completedCount"
+            ).textContent =
+                completed;
+
+
+            document.getElementById(
+                "pendingCount"
+            ).textContent =
+                Math.max(0, pending);
+
+
+            document.getElementById(
+                "donutTotal"
+            ).textContent =
+                totalTasks;
+
+
+            document.getElementById(
+                "completedLegend"
+            ).textContent =
+                completed;
+
+
+            document.getElementById(
+                "progressLegend"
+            ).textContent =
+                progress;
+
+
+            document.getElementById(
+                "pendingLegend"
+            ).textContent =
+                Math.max(0, pending);
+
+
+            document.getElementById(
+                "projectCountSmall"
+            ).textContent =
+                totalProjects + " PROJECTS";
+
+
+            updatePriorityChart();
+
+            drawLineChart();
+
+            updateDonut(
+                totalTasks,
+                completed,
+                progress,
+                pending
+            );
+        }
+
+
+        /* ==========================================
+           PRIORITY CHART
+        ========================================== */
+
+        function updatePriorityChart() {
+
+            const high =
+                tasks.filter(task =>
+                    String(
+                        task.priority || ""
+                    ).toLowerCase() === "high"
+                ).length;
+
+
+            const medium =
+                tasks.filter(task =>
+                    String(
+                        task.priority || ""
+                    ).toLowerCase() === "medium"
+                ).length;
+
+
+            const low =
+                tasks.filter(task =>
+                    String(
+                        task.priority || ""
+                    ).toLowerCase() === "low"
+                ).length;
+
+
+            document.getElementById(
+                "highValue"
+            ).textContent = high;
+
+
+            document.getElementById(
+                "mediumValue"
+            ).textContent = medium;
+
+
+            document.getElementById(
+                "lowValue"
+            ).textContent = low;
+
+
+            const max =
+                Math.max(
+                    high,
+                    medium,
+                    low,
+                    1
+                );
+
+
+            document.getElementById(
+                "highBar"
+            ).style.height =
+                (high / max * 135 + 8) + "px";
+
+
+            document.getElementById(
+                "mediumBar"
+            ).style.height =
+                (medium / max * 135 + 8) + "px";
+
+
+            document.getElementById(
+                "lowBar"
+            ).style.height =
+                (low / max * 135 + 8) + "px";
+        }
+
+
+        /* ==========================================
+           DONUT CHART
+        ========================================== */
+
+        function updateDonut(
+            total,
+            completed,
+            progress,
+            pending
+        ) {
+
+            const donut =
+                document.querySelector(".donut");
+
+
+            if (total === 0) {
+
+                donut.style.background =
+                    "#334155";
+
+                return;
+            }
+
+
+            const completedDeg =
+                completed / total * 360;
+
+            const progressDeg =
+                progress / total * 360;
+
+
+            const first =
+                completedDeg;
+
+
+            const second =
+                first + progressDeg;
+
+
+            donut.style.background = `
+                conic-gradient(
+                    #3b82f6 0deg ${first}deg,
+                    #a855f7 ${first}deg ${second}deg,
+                    #22d3ee ${second}deg 360deg
+                )
+            `;
+        }
+
+
+        /* ==========================================
+           LINE CHART
+        ========================================== */
+
+        function drawLineChart() {
+
+            const canvas =
+                document.getElementById(
+                    "lineChart"
+                );
+
+            const rect =
+                canvas.getBoundingClientRect();
+
+
+            if (
+                rect.width === 0 ||
+                rect.height === 0
+            ) {
+                return;
+            }
+
+
+            const ratio =
+                window.devicePixelRatio || 1;
+
+
+            canvas.width =
+                rect.width * ratio;
+
+            canvas.height =
+                rect.height * ratio;
+
+
+            const ctx =
+                canvas.getContext("2d");
+
+
+            ctx.scale(
+                ratio,
+                ratio
+            );
+
+
+            const width =
+                rect.width;
+
+            const height =
+                rect.height;
+
+
+            ctx.clearRect(
+                0,
+                0,
+                width,
+                height
+            );
+
+
+            /* GRID */
+
+            ctx.strokeStyle =
+                "rgba(130,145,180,0.10)";
+
+            ctx.lineWidth = 1;
+
+
+            for (
+                let i = 1;
+                i <= 5;
+                i++
+            ) {
+
+                const y =
+                    20 +
+                    (height - 50) /
+                    5 * i;
+
+
+                ctx.beginPath();
+
+                ctx.moveTo(
+                    10,
+                    y
+                );
+
+                ctx.lineTo(
+                    width - 10,
+                    y
+                );
+
+                ctx.stroke();
+            }
+
+
+            /* Generate visual points */
+
+            const count = 8;
+
+            const points = [];
+
+
+            for (
+                let i = 0;
+                i < count;
+                i++
+            ) {
+
+                const x =
+                    20 +
+                    i *
+                    ((width - 40) /
+                    (count - 1));
+
+
+                let value =
+                    35 +
+                    Math.sin(i * 1.15) *
+                    20 +
+                    Math.random() * 15;
+
+
+                if (
+                    tasks.length > 0
+                ) {
+
+                    value =
+                        Math.min(
+                            90,
+                            25 +
+                            tasks.length *
+                            4 +
+                            Math.sin(i) *
+                            15
+                        );
+
+                }
+
+
+                const y =
+                    height -
+                    30 -
+                    (value / 100) *
+                    (height - 65);
+
+
+                points.push({
+                    x,
+                    y
+                });
+            }
+
+
+            /* AREA */
+
+            const gradient =
+                ctx.createLinearGradient(
+                    0,
+                    0,
+                    0,
+                    height
+                );
+
+            gradient.addColorStop(
+                0,
+                "rgba(168,85,247,0.24)"
+            );
+
+            gradient.addColorStop(
+                1,
+                "rgba(168,85,247,0)"
+            );
+
+
+            ctx.beginPath();
+
+            ctx.moveTo(
+                points[0].x,
+                height - 30
+            );
+
+            points.forEach(
+                point => {
+
+                    ctx.lineTo(
+                        point.x,
+                        point.y
+                    );
+
+                }
+            );
+
+            ctx.lineTo(
+                points[points.length - 1].x,
+                height - 30
+            );
+
+            ctx.closePath();
+
+            ctx.fillStyle =
+                gradient;
+
+            ctx.fill();
+
+
+            /* LINE */
+
+            ctx.beginPath();
+
+            points.forEach(
+                (point, index) => {
+
+                    if (index === 0) {
+
+                        ctx.moveTo(
+                            point.x,
+                            point.y
+                        );
+
+                    } else {
+
+                        ctx.lineTo(
+                            point.x,
+                            point.y
+                        );
+
+                    }
+
+                }
+            );
+
+
+            ctx.strokeStyle =
+                "#a855f7";
+
+            ctx.lineWidth = 2;
+
+            ctx.stroke();
+
+
+            /* POINTS */
+
+            points.forEach(
+                point => {
+
+                    ctx.beginPath();
+
+                    ctx.arc(
+                        point.x,
+                        point.y,
+                        3,
+                        0,
+                        Math.PI * 2
+                    );
+
+                    ctx.fillStyle =
+                        "#22d3ee";
+
+                    ctx.fill();
+
+                }
+            );
+
+
+            /* LABELS */
+
+            const labels = [
+                "Mon",
+                "Tue",
+                "Wed",
+                "Thu",
+                "Fri",
+                "Sat",
+                "Sun",
+                "Today"
+            ];
+
+
+            ctx.font =
+                "10px Segoe UI";
+
+            ctx.fillStyle =
+                "#66718b";
+
+            ctx.textAlign =
+                "center";
+
+
+            points.forEach(
+                (point, index) => {
+
+                    ctx.fillText(
+                        labels[index],
+                        point.x,
+                        height - 8
+                    );
+
+                }
+            );
+        }
+
+
+        /* ==========================================
+           ADD PROJECT
+        ========================================== */
+
+        document
+            .getElementById("projectForm")
+            .addEventListener(
+                "submit",
+                async function(event) {
+
+                    event.preventDefault();
+
+
+                    const name =
+                        document.getElementById(
+                            "projectName"
+                        ).value.trim();
+
+
+                    const description =
+                        document.getElementById(
+                            "projectDescription"
+                        ).value.trim();
+
+
+                    const status =
+                        document.getElementById(
+                            "projectStatus"
+                        ).value;
+
+
+                    const button =
+                        document.getElementById(
+                            "addProjectButton"
+                        );
+
+
+                    if (!name) {
+
+                        showToast(
+                            "Please enter a project name.",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+
+                    button.disabled = true;
+
+                    button.textContent =
+                        "Adding...";
+
+
+                    try {
+
+                        const response =
+                            await fetch(
+                                API_URL +
+                                "/api/projects",
+                                {
+                                    method: "POST",
+
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json"
+                                    },
+
+                                    body:
+                                        JSON.stringify({
+                                            name,
+                                            description,
+                                            status
+                                        })
+                                }
+                            );
+
+
+                        if (!response.ok) {
+
+                            const errorText =
+                                await response.text();
+
+                            throw new Error(
+                                errorText ||
+                                "Could not create project"
+                            );
+                        }
+
+
+                        showToast(
+                            "Project added successfully!"
+                        );
+
+
+                        document
+                            .getElementById(
+                                "projectForm"
+                            )
+                            .reset();
+
+
+                        await loadProjects();
+
+
+                    } catch (error) {
+
+                        console.error(error);
+
+                        showToast(
+                            "Could not add project. Check your backend.",
+                            "error"
+                        );
+
+                    } finally {
+
+                        button.disabled = false;
+
+                        button.textContent =
+                            "+ Add Project";
+
+                    }
+
+                }
+            );
+
+
+        /* ==========================================
+           ESCAPE HTML
+        ========================================== */
+
+        function escapeHtml(value) {
+
+            return String(value)
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+        }
+
+
+        /* ==========================================
+           REFRESH DASHBOARD
+        ========================================== */
+
+        async function refreshDashboard() {
+
+            showToast(
+                "Refreshing dashboard..."
+            );
+
+            await Promise.all([
+                checkBackend(),
+                loadProjects(),
+                loadTasks()
+            ]);
+
+            showToast(
+                "Dashboard updated!"
+            );
+        }
+
+
+        /* ==========================================
+           WINDOW RESIZE
+        ========================================== */
+
+        window.addEventListener(
+            "resize",
+            drawLineChart
+        );
+
+
+        /* ==========================================
+           START DASHBOARD
+        ========================================== */
+
+        async function startDashboard() {
+
+            showDate();
+
+            await checkBackend();
+
+            await Promise.all([
+                loadProjects(),
+                loadTasks()
+            ]);
+
+            setTimeout(
+                drawLineChart,
+                100
+            );
+        }
+
+
+        startDashboard();
+
+    </script>
 
 </body>
 </html>
-```

@@ -3,60 +3,639 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeAlpha Shop - E-Commerce</title>
-    <link rel="stylesheet" href="style.css">
+
+    <title>CodeAlpha Shop</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            background: #080b14;
+            color: #f5f7ff;
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        header {
+            background: #101522;
+            border-bottom: 1px solid #252c3d;
+            padding: 20px 6%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: .5px;
+        }
+
+        .logo span {
+            color: #7c5cff;
+        }
+
+        .cart-button {
+            background: #171d2c;
+            border: 1px solid #30384d;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: .2s;
+        }
+
+        .cart-button:hover {
+            background: #7c5cff;
+            border-color: #7c5cff;
+            transform: translateY(-1px);
+        }
+
+        /* HERO */
+        .hero {
+            padding: 55px 6% 35px;
+        }
+
+        .hero-box {
+            background: linear-gradient(135deg, #151b2c, #101522);
+            border: 1px solid #293247;
+            border-radius: 22px;
+            padding: 45px;
+            box-shadow: 0 15px 45px rgba(0,0,0,.25);
+        }
+
+        .hero h1 {
+            font-size: 38px;
+            margin-bottom: 12px;
+        }
+
+        .hero h1 span {
+            color: #7c5cff;
+        }
+
+        .hero p {
+            color: #9da7bb;
+            font-size: 16px;
+            max-width: 650px;
+            line-height: 1.7;
+        }
+
+        /* PRODUCTS */
+        .section {
+            padding: 15px 6% 50px;
+        }
+
+        .section-title {
+            font-size: 25px;
+            margin-bottom: 25px;
+        }
+
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 22px;
+        }
+
+        .product-card {
+            background: #111725;
+            border: 1px solid #252e42;
+            border-radius: 18px;
+            overflow: hidden;
+            transition: .25s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-6px);
+            border-color: #7c5cff;
+            box-shadow: 0 15px 35px rgba(124,92,255,.15);
+        }
+
+        .product-image {
+            height: 185px;
+            background: #171e2e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 18px;
+        }
+
+        .product-info h3 {
+            font-size: 17px;
+            margin-bottom: 8px;
+        }
+
+        .description {
+            color: #8e99ad;
+            font-size: 13px;
+            min-height: 38px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .product-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .price {
+            color: #a996ff;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .add-btn {
+            border: none;
+            background: #7c5cff;
+            color: white;
+            padding: 9px 13px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: .2s;
+        }
+
+        .add-btn:hover {
+            background: #6847ed;
+            transform: scale(1.03);
+        }
+
+        /* CART */
+        .cart-section {
+            margin: 0 6% 60px;
+            background: #101622;
+            border: 1px solid #293247;
+            border-radius: 20px;
+            padding: 28px;
+        }
+
+        .cart-section h2 {
+            margin-bottom: 20px;
+        }
+
+        #cartItems {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .empty {
+            color: #8e99ad;
+            padding: 15px 0;
+        }
+
+        .cart-item {
+            background: #171e2c;
+            border: 1px solid #293247;
+            border-radius: 13px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .cart-item-name {
+            font-weight: 700;
+        }
+
+        .cart-item-price {
+            color: #a996ff;
+            font-weight: 700;
+        }
+
+        .quantity {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quantity button {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #39445b;
+            background: #20283a;
+            color: white;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .quantity span {
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .remove {
+            background: transparent;
+            border: none;
+            color: #ff6b7a;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .cart-footer {
+            border-top: 1px solid #293247;
+            margin-top: 22px;
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total {
+            font-size: 21px;
+            font-weight: 800;
+        }
+
+        .total span {
+            color: #a996ff;
+        }
+
+        .order-btn {
+            background: #7c5cff;
+            border: none;
+            color: white;
+            padding: 12px 22px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .order-btn:hover {
+            background: #6847ed;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #69758c;
+            border-top: 1px solid #20283a;
+            font-size: 13px;
+        }
+
+        /* MOBILE */
+        @media (max-width: 650px) {
+            header {
+                padding: 16px 5%;
+            }
+
+            .hero {
+                padding: 30px 5%;
+            }
+
+            .hero-box {
+                padding: 28px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .section {
+                padding: 10px 5% 35px;
+            }
+
+            .cart-section {
+                margin: 0 5% 40px;
+                padding: 20px;
+            }
+
+            .cart-item {
+                flex-wrap: wrap;
+            }
+
+            .cart-footer {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
 <header>
-    <h1>🛍️ CodeAlpha Shopping Store</h1>
+    <div class="logo">CodeAlpha <span>Shop</span></div>
 
-    <div class="cart-icon">
-        🛒 Cart (<span id="cart-count">0</span>)
-    </div>
+    <button class="cart-button" onclick="scrollToCart()">
+        🛒 Cart (<span id="cartCount">0</span>)
+    </button>
 </header>
 
-<main class="container">
+<section class="hero">
+    <div class="hero-box">
+        <h1>Welcome to <span>CodeAlpha Shop</span></h1>
+        <p>
+            Explore our collection of modern tech products.
+            Add your favorite products to the shopping cart and place your order.
+        </p>
+    </div>
+</section>
 
-    <!-- Products -->
-    <section class="products-section">
-        <h2>Our Products</h2>
+<section class="section">
+    <h2 class="section-title">Our Products</h2>
 
-        <div class="products-grid" id="product-list">
-            <!-- Products will load from JavaScript -->
-        </div>
-    </section>
+    <div class="products" id="products"></div>
+</section>
 
-    <!-- Shopping Cart -->
-    <section class="cart-section">
+<section class="cart-section" id="cartSection">
 
-        <h2>Your Shopping Cart</h2>
+    <h2>🛒 Your Shopping Cart</h2>
 
-        <div id="cart-items">
-            <p class="empty-msg">Your cart is empty.</p>
-        </div>
+    <div id="cartItems">
+        <p class="empty">Your cart is empty.</p>
+    </div>
 
-        <div class="cart-total">
-
-            <h3>
-                Total Amount: $
-                <span id="total-price">0</span>
-            </h3>
-
-            <button
-                class="checkout-btn"
-                onclick="processOrder()">
-                Place Order
-            </button>
-
+    <div class="cart-footer">
+        <div class="total">
+            Total Amount: <span>$<span id="totalAmount">0</span></span>
         </div>
 
-    </section>
+        <button class="order-btn" onclick="placeOrder()">
+            Place Order
+        </button>
+    </div>
 
-</main>
+</section>
 
-<script src="script.js"></script>
+<footer>
+    CodeAlpha Full Stack Development Internship • E-Commerce Store
+</footer>
+
+<script>
+
+    const products = [
+        {
+            id: 1,
+            name: "Premium Laptop",
+            price: 899,
+            image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=800&q=80",
+            description: "Powerful laptop for work, study and development."
+        },
+        {
+            id: 2,
+            name: "Smartphone Pro",
+            price: 699,
+            image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80",
+            description: "Modern smartphone with a premium design."
+        },
+        {
+            id: 3,
+            name: "Wireless Headphones",
+            price: 129,
+            image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80",
+            description: "Comfortable wireless headphones with clear sound."
+        },
+        {
+            id: 4,
+            name: "Mechanical Keyboard",
+            price: 89,
+            image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=800&q=80",
+            description: "Responsive mechanical keyboard for everyday use."
+        },
+        {
+            id: 5,
+            name: "Wireless Mouse",
+            price: 39,
+            image: "https://images.unsplash.com/photo-1527814050087-3793815479db?auto=format&fit=crop&w=800&q=80",
+            description: "Smooth and comfortable wireless mouse."
+        },
+        {
+            id: 6,
+            name: "Smart Watch",
+            price: 159,
+            image: "https://images.unsplash.com/photo-1544117519-31a4b719223d?auto=format&fit=crop&w=800&q=80",
+            description: "Stylish smartwatch for your everyday lifestyle."
+        },
+        {
+            id: 7,
+            name: "Laptop Backpack",
+            price: 59,
+            image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
+            description: "Durable backpack with space for your laptop."
+        },
+        {
+            id: 8,
+            name: "Digital Camera",
+            price: 499,
+            image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80",
+            description: "Capture high-quality photos and memorable moments."
+        }
+    ];
+
+    let cart = [];
+
+    function displayProducts() {
+
+        const container = document.getElementById("products");
+
+        container.innerHTML = products.map(product => {
+
+            return `
+                <div class="product-card">
+
+                    <div class="product-image">
+                        <img src="${product.image}" alt="${product.name}">
+                    </div>
+
+                    <div class="product-info">
+
+                        <h3>${product.name}</h3>
+
+                        <p class="description">
+                            ${product.description}
+                        </p>
+
+                        <div class="product-bottom">
+
+                            <div class="price">
+                                $${product.price}
+                            </div>
+
+                            <button class="add-btn"
+                                onclick="addToCart(${product.id})">
+                                Add to Cart
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            `;
+
+        }).join("");
+    }
+
+    function addToCart(id) {
+
+        const product = products.find(item => item.id === id);
+
+        const existing = cart.find(item => item.id === id);
+
+        if (existing) {
+            existing.quantity++;
+        } else {
+            cart.push({
+                ...product,
+                quantity: 1
+            });
+        }
+
+        updateCart();
+    }
+
+    function increaseQuantity(id) {
+
+        const item = cart.find(product => product.id === id);
+
+        if (item) {
+            item.quantity++;
+        }
+
+        updateCart();
+    }
+
+    function decreaseQuantity(id) {
+
+        const item = cart.find(product => product.id === id);
+
+        if (!item) return;
+
+        if (item.quantity > 1) {
+            item.quantity--;
+        } else {
+            cart = cart.filter(product => product.id !== id);
+        }
+
+        updateCart();
+    }
+
+    function removeFromCart(id) {
+
+        cart = cart.filter(product => product.id !== id);
+
+        updateCart();
+    }
+
+    function updateCart() {
+
+        const cartItems = document.getElementById("cartItems");
+        const cartCount = document.getElementById("cartCount");
+        const totalAmount = document.getElementById("totalAmount");
+
+        const count = cart.reduce(
+            (total, item) => total + item.quantity,
+            0
+        );
+
+        const total = cart.reduce(
+            (sum, item) => sum + (item.price * item.quantity),
+            0
+        );
+
+        cartCount.textContent = count;
+        totalAmount.textContent = total.toLocaleString();
+
+        if (cart.length === 0) {
+
+            cartItems.innerHTML =
+                '<p class="empty">Your cart is empty.</p>';
+
+            return;
+        }
+
+        cartItems.innerHTML = cart.map(item => {
+
+            return `
+                <div class="cart-item">
+
+                    <div>
+                        <div class="cart-item-name">
+                            ${item.name}
+                        </div>
+
+                        <div class="cart-item-price">
+                            $${item.price}
+                        </div>
+                    </div>
+
+                    <div class="quantity">
+
+                        <button onclick="decreaseQuantity(${item.id})">
+                            −
+                        </button>
+
+                        <span>${item.quantity}</span>
+
+                        <button onclick="increaseQuantity(${item.id})">
+                            +
+                        </button>
+
+                    </div>
+
+                    <button class="remove"
+                        onclick="removeFromCart(${item.id})">
+                        Remove
+                    </button>
+
+                </div>
+            `;
+
+        }).join("");
+    }
+
+    function scrollToCart() {
+
+        document.getElementById("cartSection")
+            .scrollIntoView({
+                behavior: "smooth"
+            });
+    }
+
+    function placeOrder() {
+
+        if (cart.length === 0) {
+            alert("Your cart is empty. Please add a product first.");
+            return;
+        }
+
+        alert("🎉 Order placed successfully!");
+
+        cart = [];
+
+        updateCart();
+    }
+
+    displayProducts();
+    updateCart();
+
+</script>
 
 </body>
 </html>
+

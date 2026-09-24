@@ -1,24 +1,909 @@
-HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Social Media App - CodeAlpha Task 2</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="app-container">
-        <h2>Social Media Feed</h2>
-        
-        <div class="create-post-card">
-            <textarea id="postInput" placeholder="What's on your mind?"></textarea>
-            <button onclick="addPost()">Post</button>
-        </div>
 
-        <div id="feedContainer"></div>
+    <title>ConnectHub - Social Media</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            background: #080b14;
+            color: #f5f7ff;
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+
+        header {
+            height: 72px;
+            background: #101522;
+            border-bottom: 1px solid #252c3d;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6%;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 8px 30px rgba(0,0,0,.25);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .logo span {
+            color: #7c5cff;
+        }
+
+        .search {
+            width: 300px;
+            background: #171d2c;
+            border: 1px solid #30384d;
+            color: white;
+            padding: 11px 15px;
+            border-radius: 12px;
+            outline: none;
+        }
+
+        .search:focus {
+            border-color: #7c5cff;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #7c5cff;
+        }
+
+        /* LAYOUT */
+
+        .layout {
+            max-width: 1250px;
+            margin: auto;
+            padding: 30px 20px;
+            display: grid;
+            grid-template-columns: 230px 1fr 280px;
+            gap: 25px;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            background: #101622;
+            border: 1px solid #293247;
+            border-radius: 18px;
+            padding: 18px;
+            height: fit-content;
+            position: sticky;
+            top: 95px;
+        }
+
+        .nav-item {
+            padding: 13px 14px;
+            margin-bottom: 7px;
+            border-radius: 10px;
+            color: #9da7bb;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: #1a2031;
+            color: white;
+        }
+
+        .nav-item.active {
+            border-left: 3px solid #7c5cff;
+        }
+
+        /* FEED */
+
+        .feed {
+            min-width: 0;
+        }
+
+        /* CREATE POST */
+
+        .create-post {
+            background: #101622;
+            border: 1px solid #293247;
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 22px;
+        }
+
+        .create-top {
+            display: flex;
+            gap: 12px;
+        }
+
+        .create-post textarea {
+            flex: 1;
+            background: #171e2c;
+            border: 1px solid #30394e;
+            border-radius: 12px;
+            color: white;
+            padding: 13px;
+            resize: none;
+            outline: none;
+            height: 75px;
+        }
+
+        .create-post textarea:focus {
+            border-color: #7c5cff;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 12px;
+        }
+
+        .post-btn {
+            background: #7c5cff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .post-btn:hover {
+            background: #6847ed;
+        }
+
+        /* POST */
+
+        .post {
+            background: #101622;
+            border: 1px solid #293247;
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: .2s;
+        }
+
+        .post:hover {
+            border-color: #39445c;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .post-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-weight: 700;
+        }
+
+        .time {
+            color: #78849a;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .more {
+            color: #9da7bb;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .post-text {
+            color: #d5d9e4;
+            line-height: 1.7;
+            margin: 17px 0;
+        }
+
+        .post-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 13px;
+            margin-bottom: 15px;
+        }
+
+        .post-stats {
+            display: flex;
+            gap: 20px;
+            color: #8e99ad;
+            font-size: 13px;
+            border-bottom: 1px solid #293247;
+            padding-bottom: 13px;
+        }
+
+        .post-buttons {
+            display: flex;
+            gap: 10px;
+            padding-top: 13px;
+        }
+
+        .post-buttons button {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #9da7bb;
+            padding: 9px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .post-buttons button:hover {
+            background: #1b2232;
+            color: white;
+        }
+
+        .post-buttons button.liked {
+            color: #ff6b8a;
+        }
+
+        /* RIGHT SIDE */
+
+        .right-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .side-card {
+            background: #101622;
+            border: 1px solid #293247;
+            border-radius: 18px;
+            padding: 20px;
+        }
+
+        .side-card h3 {
+            margin-bottom: 17px;
+            font-size: 17px;
+        }
+
+        .friend {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .friend img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .friend-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .online {
+            color: #6edb9a;
+            font-size: 11px;
+            margin-top: 3px;
+        }
+
+        .follow-btn {
+            margin-left: auto;
+            background: #1b2232;
+            border: 1px solid #39445b;
+            color: white;
+            border-radius: 8px;
+            padding: 7px 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .follow-btn:hover {
+            background: #7c5cff;
+            border-color: #7c5cff;
+        }
+
+        .trend {
+            margin-bottom: 14px;
+        }
+
+        .trend small {
+            color: #758197;
+        }
+
+        .trend strong {
+            display: block;
+            margin-top: 3px;
+        }
+
+        /* FOOTER */
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            border-top: 1px solid #20283a;
+            color: #69758c;
+            font-size: 13px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 1000px) {
+            .layout {
+                grid-template-columns: 200px 1fr;
+            }
+
+            .right-sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 700px) {
+
+            header {
+                padding: 0 15px;
+            }
+
+            .search {
+                display: none;
+            }
+
+            .layout {
+                display: block;
+                padding: 18px 12px;
+            }
+
+            .sidebar {
+                position: static;
+                margin-bottom: 18px;
+            }
+
+            .nav-item {
+                display: inline-block;
+                margin-right: 5px;
+            }
+
+            .create-top {
+                align-items: flex-start;
+            }
+
+            .post-image {
+                height: 220px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        Connect<span>Hub</span>
     </div>
 
-    <script src="app.js"></script>
+    <input
+        class="search"
+        type="text"
+        placeholder="Search ConnectHub..."
+        onkeyup="searchPosts(this.value)"
+    >
+
+    <div class="profile">
+
+        <img
+            class="avatar"
+            src="https://i.pravatar.cc/100?img=47"
+            alt="Profile"
+        >
+
+        <span>Maheen</span>
+
+    </div>
+
+</header>
+
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="nav-item active">🏠 Home</div>
+        <div class="nav-item">👤 Profile</div>
+        <div class="nav-item">🔔 Notifications</div>
+        <div class="nav-item">💬 Messages</div>
+        <div class="nav-item">👥 Friends</div>
+        <div class="nav-item">⚙️ Settings</div>
+
+    </aside>
+
+
+    <!-- MAIN FEED -->
+
+    <main class="feed">
+
+        <!-- CREATE POST -->
+
+        <div class="create-post">
+
+            <div class="create-top">
+
+                <img
+                    class="post-avatar"
+                    src="https://i.pravatar.cc/100?img=47"
+                    alt="Maheen"
+                >
+
+                <textarea
+                    id="postText"
+                    placeholder="What's on your mind, Maheen?"
+                ></textarea>
+
+            </div>
+
+            <div class="post-actions">
+
+                <button
+                    class="post-btn"
+                    onclick="createPost()"
+                >
+                    ✨ Create Post
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- POSTS -->
+
+        <div id="posts">
+
+            <article class="post">
+
+                <div class="post-header">
+
+                    <div class="user-info">
+
+                        <img
+                            class="post-avatar"
+                            src="https://i.pravatar.cc/100?img=32"
+                            alt="Sarah"
+                        >
+
+                        <div>
+                            <div class="user-name">Sarah Khan</div>
+                            <div class="time">2 hours ago</div>
+                        </div>
+
+                    </div>
+
+                    <div class="more">•••</div>
+
+                </div>
+
+                <p class="post-text">
+                    Just finished working on a new UI design today!
+                    Really enjoying creating clean and modern interfaces. ✨
+                </p>
+
+                <img
+                    class="post-image"
+                    src="https://images.unsplash.com/photo-1559028012-481c04fa702d?auto=format&fit=crop&w=1000&q=80"
+                    alt="UI Design"
+                >
+
+                <div class="post-stats">
+                    <span>❤️ 128 Likes</span>
+                    <span>💬 24 Comments</span>
+                    <span>↗️ 8 Shares</span>
+                </div>
+
+                <div class="post-buttons">
+
+                    <button onclick="likePost(this)">
+                        ❤️ Like
+                    </button>
+
+                    <button>
+                        💬 Comment
+                    </button>
+
+                    <button>
+                        ↗️ Share
+                    </button>
+
+                </div>
+
+            </article>
+
+
+            <article class="post">
+
+                <div class="post-header">
+
+                    <div class="user-info">
+
+                        <img
+                            class="post-avatar"
+                            src="https://i.pravatar.cc/100?img=12"
+                            alt="Ahmed"
+                        >
+
+                        <div>
+                            <div class="user-name">Ahmed Raza</div>
+                            <div class="time">5 hours ago</div>
+                        </div>
+
+                    </div>
+
+                    <div class="more">•••</div>
+
+                </div>
+
+                <p class="post-text">
+                    A productive day of coding and learning.
+                    Small progress every day leads to big results. 💻🚀
+                </p>
+
+                <div class="post-stats">
+                    <span>❤️ 86 Likes</span>
+                    <span>💬 12 Comments</span>
+                    <span>↗️ 5 Shares</span>
+                </div>
+
+                <div class="post-buttons">
+
+                    <button onclick="likePost(this)">
+                        ❤️ Like
+                    </button>
+
+                    <button>
+                        💬 Comment
+                    </button>
+
+                    <button>
+                        ↗️ Share
+                    </button>
+
+                </div>
+
+            </article>
+
+
+            <article class="post">
+
+                <div class="post-header">
+
+                    <div class="user-info">
+
+                        <img
+                            class="post-avatar"
+                            src="https://i.pravatar.cc/100?img=25"
+                            alt="Ayesha"
+                        >
+
+                        <div>
+                            <div class="user-name">Ayesha Malik</div>
+                            <div class="time">Yesterday</div>
+                        </div>
+
+                    </div>
+
+                    <div class="more">•••</div>
+
+                </div>
+
+                <p class="post-text">
+                    Coffee, creativity and a little bit of coding.
+                    Perfect combination for a productive evening. ☕💜
+                </p>
+
+                <img
+                    class="post-image"
+                    src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1000&q=80"
+                    alt="Workspace"
+                >
+
+                <div class="post-stats">
+                    <span>❤️ 214 Likes</span>
+                    <span>💬 31 Comments</span>
+                    <span>↗️ 14 Shares</span>
+                </div>
+
+                <div class="post-buttons">
+
+                    <button onclick="likePost(this)">
+                        ❤️ Like
+                    </button>
+
+                    <button>
+                        💬 Comment
+                    </button>
+
+                    <button>
+                        ↗️ Share
+                    </button>
+
+                </div>
+
+            </article>
+
+        </div>
+
+    </main>
+
+
+    <!-- RIGHT SIDEBAR -->
+
+    <aside class="right-sidebar">
+
+        <div class="side-card">
+
+            <h3>👥 People You May Know</h3>
+
+            <div class="friend">
+
+                <img src="https://i.pravatar.cc/100?img=5">
+
+                <div>
+                    <div class="friend-name">Hina Ahmed</div>
+                    <div class="online">● Online</div>
+                </div>
+
+                <button class="follow-btn" onclick="followUser(this)">
+                    Follow
+                </button>
+
+            </div>
+
+            <div class="friend">
+
+                <img src="https://i.pravatar.cc/100?img=11">
+
+                <div>
+                    <div class="friend-name">Ali Hassan</div>
+                    <div class="online">● Online</div>
+                </div>
+
+                <button class="follow-btn" onclick="followUser(this)">
+                    Follow
+                </button>
+
+            </div>
+
+            <div class="friend">
+
+                <img src="https://i.pravatar.cc/100?img=20">
+
+                <div>
+                    <div class="friend-name">Sana Iqbal</div>
+                    <div class="online">● Online</div>
+                </div>
+
+                <button class="follow-btn" onclick="followUser(this)">
+                    Follow
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="side-card">
+
+            <h3>🔥 Trending</h3>
+
+            <div class="trend">
+                <small>#Technology</small>
+                <strong>24.8K posts</strong>
+            </div>
+
+            <div class="trend">
+                <small>#WebDevelopment</small>
+                <strong>18.4K posts</strong>
+            </div>
+
+            <div class="trend">
+                <small>#UIUXDesign</small>
+                <strong>12.7K posts</strong>
+            </div>
+
+            <div class="trend">
+                <small>#CodeAlpha</small>
+                <strong>8.2K posts</strong>
+            </div>
+
+        </div>
+
+    </aside>
+
+</div>
+
+
+<footer>
+    CodeAlpha Full Stack Development Internship • ConnectHub Social Media
+</footer>
+
+
+<script>
+
+    function likePost(button) {
+
+        button.classList.toggle("liked");
+
+        if (button.classList.contains("liked")) {
+            button.innerHTML = "❤️ Liked";
+        } else {
+            button.innerHTML = "❤️ Like";
+        }
+    }
+
+
+    function followUser(button) {
+
+        if (button.innerText === "Follow") {
+
+            button.innerText = "Following";
+
+        } else {
+
+            button.innerText = "Follow";
+
+        }
+    }
+
+
+    function createPost() {
+
+        const textarea = document.getElementById("postText");
+        const text = textarea.value.trim();
+
+        if (text === "") {
+
+            alert("Please write something before creating a post.");
+
+            return;
+        }
+
+        const post = document.createElement("article");
+
+        post.className = "post";
+
+        post.innerHTML = `
+
+            <div class="post-header">
+
+                <div class="user-info">
+
+                    <img
+                        class="post-avatar"
+                        src="https://i.pravatar.cc/100?img=47"
+                        alt="Maheen"
+                    >
+
+                    <div>
+
+                        <div class="user-name">
+                            Maheen
+                        </div>
+
+                        <div class="time">
+                            Just now
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="more">
+                    •••
+                </div>
+
+            </div>
+
+            <p class="post-text">
+                ${escapeHTML(text)}
+            </p>
+
+            <div class="post-stats">
+
+                <span>❤️ 0 Likes</span>
+                <span>💬 0 Comments</span>
+                <span>↗️ 0 Shares</span>
+
+            </div>
+
+            <div class="post-buttons">
+
+                <button onclick="likePost(this)">
+                    ❤️ Like
+                </button>
+
+                <button>
+                    💬 Comment
+                </button>
+
+                <button>
+                    ↗️ Share
+                </button>
+
+            </div>
+
+        `;
+
+        document.getElementById("posts").prepend(post);
+
+        textarea.value = "";
+    }
+
+
+    function escapeHTML(text) {
+
+        const div = document.createElement("div");
+
+        div.textContent = text;
+
+        return div.innerHTML;
+    }
+
+
+    function searchPosts(value) {
+
+        const search = value.toLowerCase();
+
+        const posts = document.querySelectorAll(".post");
+
+        posts.forEach(post => {
+
+            const content = post.innerText.toLowerCase();
+
+            if (content.includes(search)) {
+
+                post.style.display = "";
+
+            } else {
+
+                post.style.display = "none";
+
+            }
+
+        });
+    }
+
+</script>
+
 </body>
-          </html>
+</html>
